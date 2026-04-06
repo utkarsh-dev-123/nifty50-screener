@@ -1,23 +1,59 @@
 {
   "date": "April 06, 2026",
-  "market_context": "The Nifty 200 is currently experiencing volatility driven by persistent FII selling and global geopolitical tensions, particularly in West Asia, which has also kept crude oil prices firm. Despite these headwinds, domestic institutional investors are aggressively buying, providing a crucial counterbalance and cushioning foreign outflows, supported by India's robust Q2 FY26 GDP growth driven by domestic demand and government spending. Falling knife investors should closely monitor developments in the US-Iran conflict and global energy prices this week, as these factors are highly sensitive to market sentiment and could dictate short-term market direction.",
+  "market_context": "The Indian equity market is experiencing volatility driven by geopolitical tensions, particularly the US-Iran conflict, persistent FII outflows, and elevated crude oil prices. Global inflation concerns and the US Federal Reserve's signal of fewer rate cuts than anticipated also contribute to a 'risk-off' sentiment. While domestic institutional buying has provided a floor, sectors like IT and financial services have faced headwinds, although some recovery was observed on April 6, 2026, due to easing geopolitical concerns. Falling knife investors should closely monitor crude price stabilization, a potential reversal in FII selling trends, and the upcoming Q4 FY26 earnings season in April-May for specific stock catalysts.",
   "stocks": [
+    {
+      "ticker": "JSWINFRA",
+      "name": "JSW Infrastructure Limited",
+      "why_fell": "The specific reason for JSW Infrastructure's recent sharp decline is not clearly articulated in recent news, suggesting it is likely impacted by broader market sentiment and sector rotation amid significant FII outflows from Indian equities. Given the overall cautious environment driven by global factors, the stock's fall appears to be macro and sentiment-driven rather than due to specific company-related structural issues.",
+      "catalyst": "Q4 FY26 earnings season expected in April-May 2026.",
+      "promoter_pledge_pct": "Unknown",
+      "value_trap_risk": "low - The company operates in a fundamentally strong sector, and its fall is attributed to broader market dynamics rather than core business deterioration.",
+      "score": 8,
+      "action": "Strong Buy",
+      "thesis_break": "If Q4 FY26 results show a significant deceleration in revenue growth or a decline in operating margins, indicating structural issues.",
+      "score_breakdown": {
+        "pe_ok": true,
+        "roe_ok": true,
+        "debt_ok": true,
+        "catalyst_ok": true,
+        "macro_driven": true
+      },
+      "price": 238.62,
+      "change_1m": -3.28,
+      "change_3m": -14.15,
+      "drawdown_52w": -31.6,
+      "volume_ratio": 1.4,
+      "panic_selling": false,
+      "sector": "Industrials",
+      "pe_ratio": 30.909327,
+      "forward_pe": 31.806034,
+      "roe": "N/A",
+      "debt_to_equity": 48.27,
+      "operating_margin": 35.5,
+      "net_margin": 31.5,
+      "revenue_growth": 14.2,
+      "ocf_cr": "N/A",
+      "market_cap_cr": 49736.0,
+      "52w_high": 349.0,
+      "52w_low": 234.6
+    },
     {
       "ticker": "JIOFIN",
       "name": "Jio Financial Services Limited",
-      "why_fell": "Jio Financial Services' shares have been declining due to high valuations and weak Q2 FY26 results where net profit saw only a modest rise despite a revenue jump. The stock also experienced a significant fall in Q3 FY26 due to the impact of dividend income and share of associates and joint ventures.",
+      "why_fell": "Jio Financial Services has experienced sustained selling pressure and intraday lows, underperforming its sector due to broader market downturns and bearish technical indicators. The stock faced a downgrade to a 'Sell' grade in January 2026, and a significant gap down opening in early March 2026, amid an overall challenging environment for financial stocks. This happened despite the company reporting strong Q3 FY26 results in January 2026, which showed a shift from treasury-led income to operating-led earnings and surging AUM in its NBFC arm.",
       "catalyst": "NONE",
       "promoter_pledge_pct": "Unknown",
-      "value_trap_risk": "High \u2014 primarily due to extremely high valuations (P/E > 90), 'N/A' ROE and OCF, and the fall being company-specific rather than purely macro-driven.",
-      "score": 2,
-      "action": "Avoid",
-      "thesis_break": "Net profit growth turning negative in the next two quarters or a significant increase in non-performing assets.",
+      "value_trap_risk": "medium - While the company is expanding rapidly, its high D/E and low ROE, combined with sustained selling pressure, suggest a need for careful monitoring of execution and profitability.",
+      "score": 4,
+      "action": "Watch",
+      "thesis_break": "If ROE does not show a significant improvement in the next two quarters or if the company's debt-to-equity ratio continues to climb without commensurate growth in core operating profits.",
       "score_breakdown": {
-        "pe_ok": false,
+        "pe_ok": true,
         "roe_ok": false,
-        "debt_ok": true,
+        "debt_ok": false,
         "catalyst_ok": false,
-        "macro_driven": false
+        "macro_driven": true
       },
       "price": 235.31,
       "change_1m": -2.48,
@@ -41,18 +77,18 @@
     {
       "ticker": "LTIM",
       "name": "LTIMindtree Ltd",
-      "why_fell": "LTIMindtree shares fell sharply in January 2026 due to a one-time hit from the implementation of new labour codes, which significantly impacted reported net profit for Q3 FY26. Additionally, brokerages flagged concerns around margins and near-term earnings visibility, while broader Indian IT sector weakness from geopolitical tensions and crude prices also contributed.",
-      "catalyst": "NONE",
+      "why_fell": "LTIMindtree's share price dropped significantly in January 2026 after reporting a lower-than-expected Q3 FY26 profit, primarily due to a one-time hit from new labor codes. Brokerages subsequently downgraded the stock, citing a near-term slowdown in discretionary IT spending and exposure to the BFSI sector, contributing to sustained selling pressure and underperformance relative to the broader market. The stock also faced a downgrade to 'Hold' in February 2026 due to mixed technical signals and elevated valuation metrics.",
+      "catalyst": "Q4 FY26 earnings announcement expected in April-May 2026.",
       "promoter_pledge_pct": "0%",
-      "value_trap_risk": "Low \u2014 the fall is primarily attributed to a one-time accounting charge and broader sector sentiment, with strong underlying operational performance and a healthy balance sheet.",
+      "value_trap_risk": "low - The core business fundamentals remain strong despite a one-time hit, and the fall is largely attributable to temporary sector headwinds and a specific, explainable earnings miss.",
       "score": 8,
-      "action": "Strong Buy (Tranche 1 now)",
-      "thesis_break": "Operating margins showing continuous decline below 15% in Q4 FY26 results or a sustained freeze in client spending.",
+      "action": "Strong Buy",
+      "thesis_break": "If Q4 FY26 results indicate a further deterioration in operating margins or a continued slowdown in constant currency revenue growth beyond seasonal factors.",
       "score_breakdown": {
         "pe_ok": true,
         "roe_ok": true,
         "debt_ok": true,
-        "catalyst_ok": false,
+        "catalyst_ok": true,
         "macro_driven": true
       },
       "price": 4303.9,
@@ -77,19 +113,19 @@
     {
       "ticker": "NUVAMA",
       "name": "Nuvama Wealth Management Limited",
-      "why_fell": "Nuvama's share price fell due to valuation concerns, flat Q3 FY26 results, and significant promoter share pledging. A stock split in December 2025 also mechanically reduced the share price, further contributing to the decline.",
+      "why_fell": "Nuvama Wealth Management experienced significant price pressure and 'panic selling' (indicated by a volume spike). This decline aligns with broader market weakness, particularly in the financial services sector, and a 'risk-off' sentiment driven by FII outflows and global macro concerns. The high promoter pledging level, while not a direct cause of the recent fall, adds a layer of concern in a volatile market.",
       "catalyst": "NONE",
       "promoter_pledge_pct": "62.8%",
-      "value_trap_risk": "High \u2014 due to extremely high promoter pledging (62.8%), 'N/A' ROE (reported 13.7% in external search), and an exceptionally high debt-to-equity ratio (237.583) from provided data.",
+      "value_trap_risk": "high - The extremely high debt-to-equity ratio and significant promoter pledging introduce substantial risks, even if the current fall is partly macro-driven.",
       "score": 4,
       "action": "Watch",
-      "thesis_break": "Promoter pledge increasing further, significant client attrition, or substantial regulatory action against wealth management practices.",
+      "thesis_break": "If promoter pledging increases further or if the company's debt levels do not show a clear path to reduction in the next two financial reporting periods.",
       "score_breakdown": {
-        "pe_ok": false,
-        "roe_ok": false,
+        "pe_ok": true,
+        "roe_ok": true,
         "debt_ok": false,
         "catalyst_ok": false,
-        "macro_driven": false
+        "macro_driven": true
       },
       "price": 1174.4,
       "change_1m": -1.85,
@@ -111,7 +147,7 @@
       "52w_low": 947.09
     }
   ],
-  "generated_at": "06 Apr 2026, 08:26 PM IST",
-  "index": "Nifty 200",
-  "version": "2.0"
+  "generated_at": "06 Apr 2026, 08:37 PM IST",
+  "index": "Nifty 500",
+  "version": "3.0"
 }
