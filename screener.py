@@ -1,6 +1,9 @@
 """
-Nifty 50 Falling Knife Stock Screener
+Nifty 200 Falling Knife Stock Screener
 Powered by Google Gemini API (free — no credit card needed)
+
+Covers all 200 stocks in the Nifty 200 index (Nifty 100 + Nifty Midcap 100)
+Picks the 7 biggest losers of the past month for falling knife analysis.
 """
 
 import os
@@ -14,18 +17,67 @@ from google.genai import types
 GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 OUTPUT_FILE    = "data.json"
 
-NIFTY50_TICKERS = [
-    "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "BHARTIARTL.NS", "ICICIBANK.NS",
-    "INFY.NS", "SBIN.NS", "HINDUNILVR.NS", "ITC.NS", "LT.NS",
-    "KOTAKBANK.NS", "HCLTECH.NS", "AXISBANK.NS", "MARUTI.NS", "SUNPHARMA.NS",
-    "TITAN.NS", "BAJFINANCE.NS", "ULTRACEMCO.NS", "ASIANPAINT.NS", "WIPRO.NS",
-    "NTPC.NS", "ONGC.NS", "ADANIPORTS.NS", "JSWSTEEL.NS", "M&M.NS",
-    "TATASTEEL.NS", "POWERGRID.NS", "COALINDIA.NS", "BAJAJFINSV.NS",
-    "NESTLEIND.NS", "GRASIM.NS", "CIPLA.NS", "DRREDDY.NS", "TECHM.NS",
-    "HINDALCO.NS", "TRENT.NS", "INDUSINDBK.NS", "EICHERMOT.NS", "BRITANNIA.NS",
-    "APOLLOHOSP.NS", "HEROMOTOCO.NS", "BPCL.NS", "SHRIRAMFIN.NS", "BEL.NS",
-    "BAJAJ-AUTO.NS", "DIVISLAB.NS", "SBILIFE.NS", "HDFCLIFE.NS", "JIOFIN.NS"
+# ── Full Nifty 200 constituent list (Yahoo Finance .NS tickers) ───────────────
+NIFTY200_TICKERS = [
+    # ── Nifty 50 ──────────────────────────────────────────────────────────────
+    "RELIANCE.NS", "HDFCBANK.NS", "BHARTIARTL.NS", "SBIN.NS", "TCS.NS",
+    "ICICIBANK.NS", "INFY.NS", "BAJFINANCE.NS", "LT.NS", "HINDUNILVR.NS",
+    "SUNPHARMA.NS", "MARUTI.NS", "HCLTECH.NS", "M&M.NS", "AXISBANK.NS",
+    "ITC.NS", "TITAN.NS", "KOTAKBANK.NS", "NTPC.NS", "ONGC.NS",
+    "ULTRACEMCO.NS", "ADANIPORTS.NS", "WIPRO.NS", "BAJAJFINSV.NS",
+    "TATAMOTORS.NS", "POWERGRID.NS", "NESTLEIND.NS", "TATASTEEL.NS",
+    "JSWSTEEL.NS", "GRASIM.NS", "COALINDIA.NS", "ASIANPAINT.NS",
+    "HINDALCO.NS", "DRREDDY.NS", "CIPLA.NS", "TECHM.NS", "TRENT.NS",
+    "INDUSINDBK.NS", "EICHERMOT.NS", "BRITANNIA.NS", "APOLLOHOSP.NS",
+    "HEROMOTOCO.NS", "BPCL.NS", "SHRIRAMFIN.NS", "BEL.NS",
+    "BAJAJ-AUTO.NS", "DIVISLAB.NS", "SBILIFE.NS", "HDFCLIFE.NS", "JIOFIN.NS",
+
+    # ── Nifty Next 50 (51–100) ────────────────────────────────────────────────
+    "ADANIENT.NS", "ADANIGREEN.NS", "ADANIPOWER.NS", "AMBUJACEM.NS",
+    "BANKBARODA.NS", "BHEL.NS", "BOSCHLTD.NS", "CANBK.NS", "CHOLAFIN.NS",
+    "COLPAL.NS", "DABUR.NS", "DLF.NS", "GAIL.NS", "GODREJCP.NS",
+    "HAVELLS.NS", "HEROMOTOCO.NS", "HINDPETRO.NS", "ICICIGI.NS",
+    "ICICIPRULI.NS", "INDIANB.NS", "INDIGO.NS", "IOC.NS", "IRCTC.NS",
+    "JINDALSTEL.NS", "JUBLFOOD.NS", "LICI.NS", "LODHA.NS", "LUPIN.NS",
+    "MARICO.NS", "MOTHERSON.NS", "MUTHOOTFIN.NS", "NAUKRI.NS", "NHPC.NS",
+    "NMDC.NS", "OFSS.NS", "PAGEIND.NS", "PAYTM.NS", "PFC.NS", "PIDILITIND.NS",
+    "PIIND.NS", "PNB.NS", "POLICYBZR.NS", "RECLTD.NS", "SAIL.NS",
+    "SIEMENS.NS", "TORNTPHARM.NS", "TATACONSUM.NS", "TIINDIA.NS",
+    "TATAPOWER.NS", "VEDL.NS", "ZOMATO.NS",
+
+    # ── Nifty Midcap 100 (101–200) ────────────────────────────────────────────
+    "ABCAPITAL.NS", "ABFRL.NS", "ALKEM.NS", "APLLTD.NS", "ASTRAL.NS",
+    "AUROPHARMA.NS", "AUBANK.NS", "BALKRISIND.NS", "BANDHANBNK.NS",
+    "BATAINDIA.NS", "BERGEPAINT.NS", "BIOCON.NS", "BLUEDART.NS",
+    "CAMS.NS", "CANFINHOME.NS", "CASTROLIND.NS", "CDSL.NS", "CESC.NS",
+    "CGPOWER.NS", "COFORGE.NS", "CONCOR.NS", "CROMPTON.NS", "CUB.NS",
+    "CUMMINSIND.NS", "DALBHARAT.NS", "DEEPAKNTR.NS", "DELHIVERY.NS",
+    "DIXON.NS", "ELGIEQUIP.NS", "EMAMILTD.NS", "ESCORTS.NS",
+    "EXIDEIND.NS", "FEDERALBNK.NS", "FLUOROCHEM.NS", "FRETAIL.NS",
+    "GLENMARK.NS", "GLAXO.NS", "GNFC.NS", "GODREJPROP.NS",
+    "GRANULES.NS", "GSPL.NS", "GUJGASLTD.NS", "HDFCAMC.NS",
+    "HONASA.NS", "IDFCFIRSTB.NS", "IEX.NS", "INDHOTEL.NS",
+    "INDUSTOWER.NS", "INOXWIND.NS", "IREDA.NS", "ISEC.NS",
+    "JKCEMENT.NS", "KAJARIACER.NS", "KPITTECH.NS", "LALPATHLAB.NS",
+    "LAURUSLABS.NS", "LICHSGFIN.NS", "LTIM.NS", "LTTS.NS",
+    "MANAPPURAM.NS", "MAXHEALTH.NS", "MCX.NS", "METROPOLIS.NS",
+    "MFSL.NS", "MGL.NS", "MPHASIS.NS", "MRF.NS", "NATIONALUM.NS",
+    "NIACL.NS", "NLCINDIA.NS", "NUVAMA.NS", "OBEROIRLTY.NS",
+    "OIL.NS", "ORIENTELEC.NS", "PCBL.NS", "PERSISTENT.NS",
+    "PETRONET.NS", "PHOENIXLTD.NS", "POLYCAB.NS", "POONAWALLA.NS",
+    "PRESTIGE.NS", "PRINCEPIPE.NS", "RADICO.NS", "RAILTEL.NS",
+    "RAINBOW.NS", "RBLBANK.NS", "ROUTE.NS", "SAFARI.NS",
+    "SBICARD.NS", "SCHAEFFLER.NS", "SOLARINDS.NS", "SONACOMS.NS",
+    "STARHEALTH.NS", "SUMICHEM.NS", "SUNDARMFIN.NS", "SUPREMEIND.NS",
+    "SYNGENE.NS", "TATACHEM.NS", "TATACOMM.NS", "THERMAX.NS",
+    "TIMKEN.NS", "TRENT.NS", "TRITURBINE.NS", "UCOBANK.NS",
+    "UJJIVANSFB.NS", "UNIONBANK.NS", "UPL.NS", "UTIAMC.NS",
+    "VARUNBEV.NS", "VBL.NS", "VOLTAS.NS", "WHIRLPOOL.NS",
+    "WIPRO.NS", "ZEEL.NS", "ZYDUSLIFE.NS",
 ]
+
+# Deduplicate (some tickers appear in both Nifty 50 and midcap sections)
+NIFTY200_TICKERS = list(dict.fromkeys(NIFTY200_TICKERS))
 
 
 def clean_nan(obj):
@@ -40,38 +92,28 @@ def clean_nan(obj):
 
 
 def fetch_top_losers(n=7):
-    print("Fetching market data...")
+    print(f"Fetching market data for {len(NIFTY200_TICKERS)} Nifty 200 stocks...")
     results = []
-    for ticker in NIFTY50_TICKERS:
+    for ticker in NIFTY200_TICKERS:
         try:
-            # Use group_by='ticker' to avoid multi-index issues in newer yfinance
             hist = yf.download(ticker, period="1mo", interval="1d",
-                               progress=False, auto_adjust=True,
-                               group_by="ticker")
+                               progress=False, auto_adjust=True)
             if hist.empty or len(hist) < 2:
                 continue
 
-            # Handle both single and multi-index DataFrames
-            if isinstance(hist.columns, type(None)):
-                continue
-            if hasattr(hist.columns, 'levels'):
-                # Multi-index: (ticker, field)
-                close = hist[ticker]["Close"] if ticker in hist.columns.get_level_values(0) else hist["Close"]
-            else:
-                close = hist["Close"]
+            close = hist["Close"]
 
-            # Squeeze to 1D Series if needed
+            # Squeeze to 1D Series if needed (handles newer yfinance multi-index)
             if hasattr(close, "squeeze"):
                 close = close.squeeze()
 
-            # Skip if still not 1D
-            if hasattr(close, 'columns'):
+            # Skip if still 2D
+            if hasattr(close, "columns"):
                 continue
 
             start_price = float(close.iloc[0])
             end_price   = float(close.iloc[-1])
 
-            # Skip NaN prices
             if math.isnan(start_price) or math.isnan(end_price):
                 continue
 
@@ -86,21 +128,30 @@ def fetch_top_losers(n=7):
 
     results.sort(key=lambda x: x["change_1m"])
     losers = results[:n]
-    print(f"  Found {len(losers)} losers: {[s['ticker'] for s in losers]}")
+    print(f"  Scanned {len(results)} stocks. Top {n} losers: {[s['ticker'] for s in losers]}")
     return losers
 
 
 def fetch_fundamentals(ticker_ns):
     try:
         info = yf.Ticker(ticker_ns + ".NS").info
+
         def pct(key):
             v = info.get(key)
-            return round(v * 100, 1) if v and not math.isnan(float(v)) else "N/A"
-        def safe(key, default="N/A"):
-            v = info.get(key, default)
-            if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+            try:
+                return round(float(v) * 100, 1) if v is not None and not math.isnan(float(v)) else "N/A"
+            except Exception:
                 return "N/A"
+
+        def safe(key):
+            v = info.get(key, "N/A")
+            try:
+                if isinstance(v, float) and (math.isnan(v) or math.isinf(v)):
+                    return "N/A"
+            except Exception:
+                pass
             return v
+
         return {
             "name":             info.get("longName", ticker_ns),
             "sector":           info.get("sector", "N/A"),
@@ -129,7 +180,7 @@ def analyse_with_gemini(stocks):
 
     prompt = f"""Today is {today}. You are a stock research analyst for the Indian equity market.
 
-The investor uses a falling knife strategy — buying fundamentally strong Nifty 50 stocks that have dropped sharply due to temporary/macro reasons, not structural ones.
+The investor uses a falling knife strategy — buying fundamentally strong Nifty 200 stocks that have dropped sharply due to temporary/macro reasons, not structural ones. Nifty 200 includes both large-cap (Nifty 100) and mid-cap (Nifty Midcap 100) stocks.
 
 Search for the latest news on each stock to explain why it fell and identify a real upcoming catalyst.
 
@@ -149,11 +200,11 @@ You MUST respond with ONLY a valid JSON object. No explanation, no markdown, no 
 
 {{
   "date": "{today}",
-  "market_context": "2 sentences on Nifty 50 conditions for a falling knife investor today",
+  "market_context": "2 sentences on Nifty 200 conditions for a falling knife investor today",
   "stocks": [
     {{
       "ticker": "...",
-      "why_fell": "2 sentences",
+      "why_fell": "2 sentences using recent news",
       "catalyst": "specific event or date",
       "value_trap_risk": "low/medium/high — one sentence",
       "score": 7,
@@ -248,8 +299,8 @@ def save_results(analysis, stocks):
         })
 
     analysis["generated_at"] = datetime.datetime.now().strftime("%d %b %Y, %I:%M %p IST")
+    analysis["index"] = "Nifty 200"
 
-    # Clean all NaN/Inf before writing — NaN is not valid JSON
     clean = clean_nan(analysis)
 
     with open(OUTPUT_FILE, "w") as f:
@@ -259,12 +310,12 @@ def save_results(analysis, stocks):
 
 def main():
     print(f"\n{'='*55}")
-    print(f"  Nifty 50 Screener  —  {datetime.date.today()}")
+    print(f"  Nifty 200 Screener  —  {datetime.date.today()}")
     print(f"{'='*55}\n")
 
     losers = fetch_top_losers(n=7)
     if not losers:
-        print("ERROR: No losers found. Exiting.")
+        print("ERROR: No losers found — market may be closed today. Exiting.")
         raise SystemExit(1)
 
     print("\nFetching fundamentals...")
