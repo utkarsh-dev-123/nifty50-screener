@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falling Knife · Nifty 50</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:system-ui,-apple-system,sans-serif;background:#f5f4f0;color:#1a1a18;min-height:100vh}
+
+  /* ── Header ── */
+  .header{background:#fff;border-bottom:1px solid rgba(0,0,0,0.08);padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;position:sticky;top:0;z-index:10}
+  .logo{font-size:17px;font-weight:600;letter-spacing:-0.3px}
+  .logo span{color:#1D9E75}
+  .header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .badge{font-size:11px;padding:3px 10px;border-radius:99px;font-weight:500}
+  .b-amber{background:#FAEEDA;color:#854F0B}
+  .b-gray{background:#f1f0ec;color:#5F5E5A}
+  .last-run{font-size:11px;color:#888}
+
+  /* ── Market context bar ── */
+  .ctx{background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);padding:12px 20px;font-size:13px;color:#5F5E5A;line-height:1.6;display:none}
+  .ctx-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:#888;margin-bottom:3px}
+
+  /* ── Filter row ── */
+  .filter-row{padding:14px 16px 8px;display:flex;gap:6px;flex-wrap:wrap}
+  .f-btn{font-size:12px;padding:5px 14px;border-radius:99px;border:1px solid rgba(0,0,0,0.15);background:transparent;color:#5F5E5A;cursor:pointer;transition:all 0.15s}
+  .f-btn.on{background:#1a1a18;color:#fff;border-color:transparent}
+
+  /* ── Cards ── */
+  .grid{display:grid;gap:10px;padding:0 16px 24px}
+  .card{background:#fff;border:1px solid rgba(0,0,0,0.08);border-radius:14px;padding:16px;cursor:pointer;transition:border-color 0.15s}
+  .card:hover{border-color:rgba(0,0,0,0.22)}
+  .card.open{border-color:rgba(0,0,0,0.22)}
+
+  /* card top */
+  .ctop{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px}
+  .cleft{display:flex;gap:12px;align-items:center}
+  .score-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+  .sc-buy{background:#EAF3DE;color:#3B6D11}
+  .sc-watch{background:#FAEEDA;color:#854F0B}
+  .sc-avoid{background:#FCEBEB;color:#A32D2D}
+  .ticker{font-size:16px;font-weight:600}
+  .cname{font-size:11px;color:#888;margin-top:1px}
+  .cright{display:flex;flex-direction:column;align-items:flex-end;gap:5px}
+  .action-pill{padding:3px 11px;border-radius:99px;font-size:11px;font-weight:600}
+  .ap-buy{background:#EAF3DE;color:#3B6D11}
+  .ap-watch{background:#FAEEDA;color:#854F0B}
+  .ap-avoid{background:#FCEBEB;color:#A32D2D}
+  .price-row{font-size:12px;color:#888;text-align:right}
+  .neg{color:#A32D2D;font-weight:500}
+
+  /* metrics strip */
+  .metrics{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:10px}
+  .m{font-size:12px}.ml{color:#888}.mv{font-weight:600;color:#1a1a18}
+
+  /* why fell */
+  .why{font-size:13px;color:#5F5E5A;line-height:1.55;margin-bottom:5px}
+  .tap-hint{font-size:11px;color:#aaa}
+
+  /* expanded section */
+  .expand{display:none;margin-top:12px;border-top:1px solid rgba(0,0,0,0.07);padding-top:12px}
+  .card.open .expand{display:block}
+  .erow{margin-bottom:10px}
+  .elabel{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:#888;margin-bottom:3px}
+  .etext{font-size:13px;line-height:1.6;color:#1a1a18}
+  .divider{height:1px;background:rgba(0,0,0,0.06);margin:10px 0}
+
+  /* score breakdown pills */
+  .sbd{display:flex;gap:5px;flex-wrap:wrap;margin-top:4px}
+  .sb{font-size:11px;padding:2px 9px;border-radius:99px;border:1px solid}
+  .sb-y{background:#EAF3DE;color:#3B6D11;border-color:#b5dda0}
+  .sb-n{background:#FCEBEB;color:#A32D2D;border-color:#f5b8b8}
+
+  /* thesis break */
+  .tbox{background:#FAEEDA;border-radius:8px;padding:8px 12px;font-size:12px;color:#854F0B;margin-top:8px;line-height:1.5}
+
+  /* more metrics */
+  .more-metrics{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;margin-top:8px}
+  .mm{font-size:12px;display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+  .mml{color:#888}.mmv{font-weight:500}
+
+  /* empty / loading */
+  .state{text-align:center;padding:60px 20px;color:#888;font-size:14px}
+  .state-icon{font-size:36px;margin-bottom:12px;opacity:0.3}
+  .spinner{width:28px;height:28px;border:2px solid rgba(0,0,0,0.1);border-top-color:#1D9E75;border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* disclaimer */
+  .disclaimer{text-align:center;font-size:11px;color:#aaa;padding:16px 20px 28px;line-height:1.6}
+
+  /* responsive */
+  @media(min-width:640px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+    .main-wrap{max-width:900px;margin:0 auto}
+  }
+  @media(min-width:900px){
+    .grid{grid-template-columns:repeat(2,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">Falling<span>Knife</span> · Nifty 50</div>
+  <div class="header-right">
+    <span class="badge b-amber" id="vix-badge">India VIX loading...</span>
+    <span class="last-run" id="last-run">Loading...</span>
+  </div>
+</div>
+
+<div class="ctx" id="ctx-bar">
+  <div class="ctx-label">Market context</div>
+  <div id="ctx-text"></div>
+</div>
+
+<div class="main-wrap">
+  <div class="filter-row">
+    <button class="f-btn on" onclick="filter('all',this)">All</button>
+    <button class="f-btn" onclick="filter('buy',this)">🟢 Buy</button>
+    <button class="f-btn" onclick="filter('watch',this)">🟡 Watch</button>
+    <button class="f-btn" onclick="filter('avoid',this)">🔴 Avoid</button>
+  </div>
+
+  <div class="grid" id="grid">
+    <div class="state" style="grid-column:1/-1">
+      <div class="spinner"></div>
+      Loading today's picks...
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    Not investment advice. Always do your own research and consult a SEBI-registered advisor before investing.
+  </div>
+</div>
+
+<script>
+let allStocks = [];
+let currentFilter = 'all';
+
+function scoreClass(s){ return s>=7?'buy':s>=5?'watch':'avoid' }
+function actionClass(a){
+  const l=a.toLowerCase();
+  return l.includes('buy')?'ap-buy':l.includes('watch')?'ap-watch':'ap-avoid';
+}
+function fmt(v){ return (v===undefined||v===null||v==='N/A')?'—':v }
+
+function renderCards(stocks){
+  const grid = document.getElementById('grid');
+  if(!stocks.length){
+    grid.innerHTML='<div class="state" style="grid-column:1/-1"><div class="state-icon">◎</div>No stocks match this filter.</div>';
+    return;
+  }
+  grid.innerHTML = stocks.map(s=>{
+    const sc   = scoreClass(s.score);
+    const bd   = s.score_breakdown || {};
+    const ap   = actionClass(s.action);
+    return `
+    <div class="card" id="card-${s.ticker}" onclick="toggle('${s.ticker}')">
+      <div class="ctop">
+        <div class="cleft">
+          <div class="score-circle sc-${sc}">${s.score}</div>
+          <div>
+            <div class="ticker">${s.ticker}</div>
+            <div class="cname">${fmt(s.name)} · ${fmt(s.sector)}</div>
+          </div>
+        </div>
+        <div class="cright">
+          <span class="action-pill ${ap}">${s.action}</span>
+          <div class="price-row">₹${fmt(s.price)} &nbsp;<span class="neg">${fmt(s.change_1m)}% (1M)</span></div>
+        </div>
+      </div>
+      <div class="metrics">
+        <div class="m"><span class="ml">P/E </span><span class="mv">${fmt(s.pe_ratio)}</span></div>
+        <div class="m"><span class="ml">ROE </span><span class="mv">${fmt(s.roe)}%</span></div>
+        <div class="m"><span class="ml">D/E </span><span class="mv">${fmt(s.debt_to_equity)}</span></div>
+        <div class="m"><span class="ml">Margin </span><span class="mv">${fmt(s.operating_margin)}%</span></div>
+      </div>
+      <div class="why">${s.why_fell}</div>
+      <div class="tap-hint">Tap for full analysis</div>
+      <div class="expand">
+        <div class="erow">
+          <div class="elabel">Catalyst for recovery</div>
+          <div class="etext">${s.catalyst}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="erow">
+          <div class="elabel">Value trap risk</div>
+          <div class="etext">${s.value_trap_risk}</div>
+        </div>
+        <div class="divider"></div>
+        <div class="erow">
+          <div class="elabel">Score breakdown</div>
+          <div class="sbd">
+            <span class="sb ${bd.pe_ok?'sb-y':'sb-n'}">${bd.pe_ok?'✓':'✗'} P/E fair</span>
+            <span class="sb ${bd.roe_ok?'sb-y':'sb-n'}">${bd.roe_ok?'✓':'✗'} ROE &gt;15%</span>
+            <span class="sb ${bd.debt_ok?'sb-y':'sb-n'}">${bd.debt_ok?'✓':'✗'} Low debt</span>
+            <span class="sb ${bd.catalyst_ok?'sb-y':'sb-n'}">${bd.catalyst_ok?'✓':'✗'} Catalyst</span>
+            <span class="sb ${bd.macro_driven?'sb-y':'sb-n'}">${bd.macro_driven?'✓':'✗'} Macro-driven</span>
+          </div>
+        </div>
+        <div class="tbox">⚠ Exit if: ${s.thesis_break}</div>
+        <div class="erow" style="margin-top:12px">
+          <div class="elabel">All metrics</div>
+          <div class="more-metrics">
+            <div class="mm"><span class="mml">Price</span><span class="mmv">₹${fmt(s.price)}</span></div>
+            <div class="mm"><span class="mml">52W High</span><span class="mmv">₹${fmt(s['52w_high'])}</span></div>
+            <div class="mm"><span class="mml">Fwd P/E</span><span class="mmv">${fmt(s.forward_pe)}</span></div>
+            <div class="mm"><span class="mml">52W Low</span><span class="mmv">₹${fmt(s['52w_low'])}</span></div>
+            <div class="mm"><span class="mml">Mkt Cap</span><span class="mmv">₹${fmt(s.market_cap_cr)}Cr</span></div>
+            <div class="mm"><span class="mml">Rev Growth</span><span class="mmv">${fmt(s.revenue_growth)}%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggle(ticker){
+  const card = document.getElementById('card-'+ticker);
+  card.classList.toggle('open');
+}
+
+function filter(type, btn){
+  currentFilter = type;
+  document.querySelectorAll('.f-btn').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  let filtered = allStocks;
+  if(type==='buy')   filtered = allStocks.filter(s=>s.score>=7);
+  if(type==='watch') filtered = allStocks.filter(s=>s.score>=5&&s.score<7);
+  if(type==='avoid') filtered = allStocks.filter(s=>s.score<5);
+  renderCards(filtered);
+}
+
+async function loadData(){
+  try {
+    const res  = await fetch('data.json?t='+Date.now());
+    if(!res.ok) throw new Error('data.json not found');
+    const data = await res.json();
+
+    // Market context bar
+    const ctx = document.getElementById('ctx-bar');
+    ctx.style.display = 'block';
+    document.getElementById('ctx-text').textContent = data.market_context;
+
+    // Header
+    document.getElementById('last-run').textContent = 'Updated: ' + (data.generated_at || data.date);
+    document.getElementById('vix-badge').textContent = 'India VIX ~27 · Elevated';
+
+    // Render cards
+    allStocks = data.stocks || [];
+    renderCards(allStocks);
+
+  } catch(e) {
+    document.getElementById('grid').innerHTML = `
+      <div class="state" style="grid-column:1/-1">
+        <div class="state-icon">◎</div>
+        <div>No data yet.</div>
+        <div style="margin-top:8px;font-size:12px;color:#aaa">
+          Run the screener script once to generate data.json,<br>
+          then refresh this page.
+        </div>
+      </div>`;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
