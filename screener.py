@@ -1,15 +1,11 @@
 """
-Nifty 200 Falling Knife Stock Screener — v2
+Nifty 500 Falling Knife Stock Screener — v3
 Powered by Google Gemini API (free — no credit card needed)
 
-What's new in v2:
-  - Expanded to 20 stocks (from 7)
-  - Quality pre-filter: revenue growth > 0, OCF > 0, ROE > 12%, margin > 8%
-  - Sector-aware filter: banks/NBFCs and PSUs get relaxed thresholds
-  - Drawdown filter: only stocks 20–65% below their 52W high
-  - Dual lookback: both 1-month AND 3-month must be negative, 3M not worse than -40%
-  - Volume spike detection: flags panic selling
-  - Tighter Gemini prompt: no vague catalysts allowed
+Scans all ~500 Nifty 500 stocks
+Applies quality pre-filters, drawdown filter, dual lookback
+Picks the 30 biggest losers that pass all filters
+Sends to Gemini for deep analysis with Google Search grounding
 """
 
 import os
@@ -24,93 +20,134 @@ GEMINI_API_KEY = os.environ["GEMINI_API_KEY"]
 OUTPUT_FILE    = "data.json"
 
 # ── Sector classification for filter overrides ────────────────────────────────
-# Banks and NBFCs: skip margin filter, use lower ROE threshold
 BANK_NBFC_TICKERS = {
     "HDFCBANK", "ICICIBANK", "SBIN", "KOTAKBANK", "AXISBANK", "INDUSINDBK",
     "BANDHANBNK", "FEDERALBNK", "IDFCFIRSTB", "RBLBANK", "AUBANK", "CUB",
     "INDIANB", "BANKBARODA", "CANBK", "PNB", "UNIONBANK", "UCOBANK",
+    "BANKINDIA", "IOB", "CENTRALBK", "MAHABANK", "YESBANK", "IDBI",
     "BAJFINANCE", "BAJAJFINSV", "CHOLAFIN", "MUTHOOTFIN", "MANAPPURAM",
     "LICHSGFIN", "CANFINHOME", "POONAWALLA", "SHRIRAMFIN", "ABCAPITAL",
     "SBICARD", "JIOFIN", "HDFCAMC", "UTIAMC", "CAMS", "ISEC", "NUVAMA",
     "LICI", "SBILIFE", "HDFCLIFE", "ICICIGI", "ICICIPRULI", "STARHEALTH",
-    "NIACL", "MFSL",
+    "NIACL", "MFSL", "GICRE", "POLICYBZR", "BAJAJHFL", "LTFH",
+    "360ONE", "MOTILALOFS", "SUNDARMFIN",
 }
 
-# PSUs: loosen ROE to 8%, strict on OCF
 PSU_TICKERS = {
     "NTPC", "ONGC", "COALINDIA", "POWERGRID", "BHEL", "SAIL", "NMDC",
     "GAIL", "IOC", "BPCL", "HINDPETRO", "OIL", "NHPC", "NLCINDIA",
     "RECLTD", "PFC", "IRCTC", "CONCOR", "RAILTEL", "IREDA", "LICI",
     "BANKBARODA", "CANBK", "PNB", "UNIONBANK", "UCOBANK", "INDIANB",
+    "HAL", "BEL", "RVNL", "COCHINSHIP", "MAZAGONDOCK", "IRFC",
+    "HUDCO", "MRPL", "BANKINDIA", "IOB", "CENTRALBK", "MAHABANK",
+    "SJVN", "NBCC", "TITAGARH", "BEML",
 }
 
-# Capital goods / infra: lumpy cash flows, loosen OCF filter
 CAPEX_HEAVY_TICKERS = {
     "LT", "SIEMENS", "ABB", "THERMAX", "CUMMINSIND", "BHEL", "TIINDIA",
-    "TATAPOWER", "ADANIPOWER", "ADANIGREEN", "ADANIPORTS",
+    "TATAPOWER", "ADANIPOWER", "ADANIGREEN", "ADANIPORTS", "ADANIENT",
+    "JSWENERGY", "TORNTPOWER", "SUZLON", "WAAREEENER", "PREMIERENE",
+    "GMRINFRA", "APLAPOLLO",
 }
 
-# ── Full Nifty 200 constituent list ───────────────────────────────────────────
-NIFTY200_TICKERS = [
-    # ── Nifty 50 ──────────────────────────────────────────────────────────────
+# ── Full Nifty 500 ticker list (Yahoo Finance .NS format) ─────────────────────
+NIFTY500_TICKERS = [
+    # ── Large Cap (Nifty 100) ──────────────────────────────────────────────────
     "RELIANCE.NS", "HDFCBANK.NS", "BHARTIARTL.NS", "SBIN.NS", "TCS.NS",
     "ICICIBANK.NS", "INFY.NS", "BAJFINANCE.NS", "LT.NS", "HINDUNILVR.NS",
-    "SUNPHARMA.NS", "MARUTI.NS", "HCLTECH.NS", "M&M.NS", "AXISBANK.NS",
-    "ITC.NS", "TITAN.NS", "KOTAKBANK.NS", "NTPC.NS", "ONGC.NS",
-    "ULTRACEMCO.NS", "ADANIPORTS.NS", "WIPRO.NS", "BAJAJFINSV.NS",
-    "TATAMOTORS.NS", "POWERGRID.NS", "NESTLEIND.NS", "TATASTEEL.NS",
-    "JSWSTEEL.NS", "GRASIM.NS", "COALINDIA.NS", "ASIANPAINT.NS",
-    "HINDALCO.NS", "DRREDDY.NS", "CIPLA.NS", "TECHM.NS", "TRENT.NS",
-    "INDUSINDBK.NS", "EICHERMOT.NS", "BRITANNIA.NS", "APOLLOHOSP.NS",
-    "HEROMOTOCO.NS", "BPCL.NS", "SHRIRAMFIN.NS", "BEL.NS",
-    "BAJAJ-AUTO.NS", "DIVISLAB.NS", "SBILIFE.NS", "HDFCLIFE.NS", "JIOFIN.NS",
+    "LICI.NS", "SUNPHARMA.NS", "MARUTI.NS", "HCLTECH.NS", "M&M.NS",
+    "AXISBANK.NS", "ITC.NS", "TITAN.NS", "ONGC.NS", "KOTAKBANK.NS",
+    "NTPC.NS", "ADANIPORTS.NS", "ULTRACEMCO.NS", "ADANIPOWER.NS", "BEL.NS",
+    "DMART.NS", "JSWSTEEL.NS", "COALINDIA.NS", "POWERGRID.NS", "VEDL.NS",
+    "BAJAJFINSV.NS", "HAL.NS", "BAJAJ-AUTO.NS", "TATASTEEL.NS", "ADANIENT.NS",
+    "NESTLEIND.NS", "ZOMATO.NS", "HINDZINC.NS", "ASIANPAINT.NS", "HINDALCO.NS",
+    "WIPRO.NS", "IOC.NS", "EICHERMOT.NS", "SBILIFE.NS", "GRASIM.NS",
+    "SHRIRAMFIN.NS", "INDIGO.NS", "TVSMOTOR.NS", "DIVISLAB.NS", "JIOFIN.NS",
+    "TECHM.NS", "ADANIGREEN.NS", "VARUNBEV.NS", "TORNTPHARM.NS", "PFC.NS",
+    "UNIONBANK.NS", "BRITANNIA.NS", "ABB.NS", "PIDILITIND.NS", "DLF.NS",
+    "BANKBARODA.NS", "CUMMINSIND.NS", "LTIM.NS", "MUTHOOTFIN.NS", "TRENT.NS",
+    "TATAPOWER.NS", "HDFCLIFE.NS", "BPCL.NS", "PNB.NS", "IRFC.NS",
+    "SOLARINDS.NS", "INDIANB.NS", "JINDALSTEL.NS", "BSE.NS", "CHOLAFIN.NS",
+    "CANBK.NS", "ADANITRANS.NS", "ABBPOW.NS", "MOTHERSON.NS", "INDUSTOWER.NS",
+    "TATAMOTORS.NS", "SIEMENS.NS", "CGPOWER.NS", "APOLLOHOSP.NS", "LUPIN.NS",
+    "POLYCAB.NS", "TATACONSUM.NS", "GODREJCP.NS", "DRREDDY.NS", "HDFCAMC.NS",
+    "HEROMOTOCO.NS", "BAJAJHLD.NS", "MARICO.NS", "GEVERNOVAIND.NS", "AMBUJACEM.NS",
+    "CIPLA.NS", "BOSCHLTD.NS", "GMRINFRA.NS", "IDEA.NS", "GAIL.NS",
+    "MAXHEALTH.NS", "MAZAGONDOCK.NS", "MCDOWELL-N.NS", "WAAREEENER.NS",
+    "ASHOKLEY.NS", "ZYDUSLIFE.NS", "BHEL.NS", "JSWENERGY.NS", "RECLTD.NS",
+    "ICICIGI.NS", "SHREECEM.NS", "INDHOTEL.NS", "PERSISTENT.NS", "MANKIND.NS",
+    "BFUTILITIE.NS", "LLOYDSME.NS", "ABCAPITAL.NS", "OIL.NS", "AUROPHARMA.NS",
+    "SWIGGY.NS", "NHPC.NS", "BHARATFORG.NS", "HEXATRAD.NS", "IDBI.NS",
+    "HAVELLS.NS", "DABUR.NS", "NATIONALUM.NS", "ICICIPRULI.NS", "SRF.NS",
 
-    # ── Nifty Next 50 (51–100) ────────────────────────────────────────────────
-    "ADANIENT.NS", "ADANIGREEN.NS", "ADANIPOWER.NS", "AMBUJACEM.NS",
-    "BANKBARODA.NS", "BHEL.NS", "BOSCHLTD.NS", "CANBK.NS", "CHOLAFIN.NS",
-    "COLPAL.NS", "DABUR.NS", "DLF.NS", "GAIL.NS", "GODREJCP.NS",
-    "HAVELLS.NS", "HINDPETRO.NS", "ICICIGI.NS", "ICICIPRULI.NS",
-    "INDIANB.NS", "INDIGO.NS", "IOC.NS", "IRCTC.NS", "JINDALSTEL.NS",
-    "JUBLFOOD.NS", "LICI.NS", "LODHA.NS", "LUPIN.NS", "MARICO.NS",
-    "MOTHERSON.NS", "MUTHOOTFIN.NS", "NAUKRI.NS", "NHPC.NS", "NMDC.NS",
-    "OFSS.NS", "PAGEIND.NS", "PAYTM.NS", "PFC.NS", "PIDILITIND.NS",
-    "PIIND.NS", "PNB.NS", "POLICYBZR.NS", "RECLTD.NS", "SAIL.NS",
-    "SIEMENS.NS", "TORNTPHARM.NS", "TATACONSUM.NS", "TIINDIA.NS",
-    "TATAPOWER.NS", "VEDL.NS", "ZOMATO.NS",
+    # ── Mid Cap (Nifty Midcap 150) ─────────────────────────────────────────────
+    "NYKAA.NS", "LODHA.NS", "HINDPETRO.NS", "NMDC.NS", "TORNTPOWER.NS",
+    "GICRE.NS", "POLICYBZR.NS", "FEDERALBNK.NS", "BAJAJHFL.NS", "AUBANK.NS",
+    "NAUKRI.NS", "PAYTM.NS", "SAIL.NS", "BANKINDIA.NS", "IOB.NS",
+    "ALKEM.NS", "LINDEINDIA.NS", "MCX.NS", "OFSS.NS", "INDUSINDBK.NS",
+    "SBICARD.NS", "DIXON.NS", "LTFH.NS", "FORTIS.NS", "JSWINFRA.NS",
+    "JSTAINLESS.NS", "UNOMINDA.NS", "GLENMARK.NS", "SCHAEFFLER.NS",
+    "ADANITOTGAS.NS", "BIOCON.NS", "LAURUSLABS.NS", "YESBANK.NS",
+    "SUZLON.NS", "ABBOTINDIA.NS", "COROMANDEL.NS", "OBEROIRLTY.NS",
+    "PHOENIXLTD.NS", "RVNL.NS", "MRF.NS", "NIPPONLIFE.NS", "APLAPOLLO.NS",
+    "IDFCFIRSTB.NS", "PATANJALI.NS", "JSWINFRA.NS", "MFSL.NS",
+    "SUNDARMFIN.NS", "UPL.NS", "FCTLTD.NS", "COLPAL.NS", "TIINDIA.NS",
+    "PRESTIGE.NS", "MAHABANK.NS", "BERGEPAINT.NS", "HINDCOPPER.NS",
+    "SUPREMEIND.NS", "GODREJPROP.NS", "BHARATDYN.NS", "PIIND.NS",
+    "MPHASIS.NS", "ASTRAL.NS", "PREMIERENE.NS", "MOTILALOFS.NS",
+    "IRCTC.NS", "VOLTAS.NS", "COFORGE.NS", "KALYANKJIL.NS", "BALKRISIND.NS",
+    "JKCEMENT.NS", "M&MFIN.NS", "APARINDS.NS", "TATACOMM.NS", "UBL.NS",
+    "THERMAX.NS", "GLAXO.NS", "KEIINDS.NS", "NLCINDIA.NS", "PETRONET.NS",
+    "360ONE.NS", "PAGEIND.NS", "IPCALAB.NS", "AUTHUM.NS", "LTTS.NS",
+    "FLUOROCHEM.NS", "RADICO.NS", "AJANTPHARM.NS", "COCHINSHIP.NS",
+    "AIAENG.NS", "ASTERDM.NS", "DALBHARAT.NS", "HUDCO.NS", "3MINDIA.NS",
+    "CONCOR.NS", "NARAYANA.NS", "IREDA.NS", "POONAWALLA.NS", "MRPL.NS",
+    "DELHIVERY.NS", "ESCORTS.NS", "ENDURANCE.NS", "BLUESTARCO.NS",
+    "JBCHEPHARM.NS", "SONACOMS.NS", "CENTRALBK.NS", "NAVINFLUOR.NS",
+    "KAYNES.NS", "KPITTECH.NS", "TATAELXSI.NS", "KAJARIACER.NS",
+    "MANAPPURAM.NS", "CANFINHOME.NS", "CDSL.NS", "CESC.NS", "CROMPTON.NS",
+    "CUB.NS", "DEEPAKNTR.NS", "ELGIEQUIP.NS", "EMAMILTD.NS", "EXIDEIND.NS",
+    "GNFC.NS", "GRANULES.NS", "GSPL.NS", "GUJGASLTD.NS", "IEX.NS",
+    "INOXWIND.NS", "ISEC.NS", "LALPATHLAB.NS", "LICHSGFIN.NS",
+    "METROPOLIS.NS", "MGL.NS", "NIACL.NS", "NUVAMA.NS", "PCBL.NS",
+    "RAILTEL.NS", "RBLBANK.NS", "ROUTE.NS", "SAFARI.NS", "STARHEALTH.NS",
+    "SUMICHEM.NS", "SYNGENE.NS", "TATACHEM.NS", "TIMKEN.NS", "UJJIVANSFB.NS",
+    "UCOBANK.NS", "UTIAMC.NS", "ZEEL.NS",
 
-    # ── Nifty Midcap 100 (101–200) ────────────────────────────────────────────
-    "ABCAPITAL.NS", "ABFRL.NS", "ALKEM.NS", "APLLTD.NS", "ASTRAL.NS",
-    "AUROPHARMA.NS", "AUBANK.NS", "BALKRISIND.NS", "BANDHANBNK.NS",
-    "BATAINDIA.NS", "BERGEPAINT.NS", "BIOCON.NS", "BLUEDART.NS",
-    "CAMS.NS", "CANFINHOME.NS", "CASTROLIND.NS", "CDSL.NS", "CESC.NS",
-    "CGPOWER.NS", "COFORGE.NS", "CONCOR.NS", "CROMPTON.NS", "CUB.NS",
-    "CUMMINSIND.NS", "DALBHARAT.NS", "DEEPAKNTR.NS", "DELHIVERY.NS",
-    "DIXON.NS", "ELGIEQUIP.NS", "EMAMILTD.NS", "ESCORTS.NS",
-    "EXIDEIND.NS", "FEDERALBNK.NS", "FLUOROCHEM.NS", "GLENMARK.NS",
-    "GODREJPROP.NS", "GRANULES.NS", "GSPL.NS", "GUJGASLTD.NS",
-    "HDFCAMC.NS", "HONASA.NS", "IDFCFIRSTB.NS", "IEX.NS", "INDHOTEL.NS",
-    "INDUSTOWER.NS", "IREDA.NS", "ISEC.NS", "JKCEMENT.NS", "KAJARIACER.NS",
-    "KPITTECH.NS", "LALPATHLAB.NS", "LAURUSLABS.NS", "LICHSGFIN.NS",
-    "LTIM.NS", "LTTS.NS", "MANAPPURAM.NS", "MAXHEALTH.NS", "MCX.NS",
-    "METROPOLIS.NS", "MFSL.NS", "MGL.NS", "MPHASIS.NS", "MRF.NS",
-    "NATIONALUM.NS", "NIACL.NS", "NLCINDIA.NS", "NUVAMA.NS", "OBEROIRLTY.NS",
-    "OIL.NS", "PCBL.NS", "PERSISTENT.NS", "PETRONET.NS", "PHOENIXLTD.NS",
-    "POLYCAB.NS", "POONAWALLA.NS", "PRESTIGE.NS", "RADICO.NS", "RAILTEL.NS",
-    "RBLBANK.NS", "ROUTE.NS", "SAFARI.NS", "SBICARD.NS", "SCHAEFFLER.NS",
-    "SOLARINDS.NS", "SONACOMS.NS", "STARHEALTH.NS", "SUMICHEM.NS",
-    "SUNDARMFIN.NS", "SUPREMEIND.NS", "SYNGENE.NS", "TATACHEM.NS",
-    "TATACOMM.NS", "THERMAX.NS", "TIMKEN.NS", "UJJIVANSFB.NS",
-    "UNIONBANK.NS", "UPL.NS", "UTIAMC.NS", "VARUNBEV.NS", "VOLTAS.NS",
-    "ZYDUSLIFE.NS",
+    # ── Small Cap additions (Nifty Smallcap 250 overlap) ──────────────────────
+    "AEGISCHEM.NS", "ANGELONE.NS", "ATUL.NS", "BANDHANBNK.NS", "BATAINDIA.NS",
+    "BLUEDART.NS", "CAMPUS.NS", "CAPLIPOINT.NS", "CARBORUNIV.NS", "CEATLTD.NS",
+    "CENTURYPLY.NS", "CHAMBLFERT.NS", "CLEAN.NS", "CMSINFO.NS", "DBCORP.NS",
+    "DCMSHRIRAM.NS", "DEEPAKFERT.NS", "DELTACORP.NS", "DHANUKA.NS", "DMART.NS",
+    "EASEMYTRIP.NS", "EIDPARRY.NS", "ELECTCAST.NS", "EMCURE.NS", "EPL.NS",
+    "FINEORG.NS", "GESHIP.NS", "GLAND.NS", "GPIL.NS", "GREAVESCOT.NS",
+    "GREENPANEL.NS", "GRINDWELL.NS", "HAPPSTMNDS.NS", "HEG.NS", "HFCL.NS",
+    "HOMEFIRST.NS", "HONASA.NS", "IFCI.NS", "IGPL.NS", "INDIGOPNTS.NS",
+    "INTELLECT.NS", "ION.NS", "ISGEC.NS", "JWL.NS", "JYOTICNC.NS",
+    "KARURVYSYA.NS", "KENNAMET.NS", "KNRCON.NS", "LATENTVIEW.NS", "LXCHEM.NS",
+    "MAHSEAMLES.NS", "MASTECH.NS", "MEDPLUS.NS", "MIDHANI.NS", "MOLDTKPAC.NS",
+    "MTAR.NS", "MULTIBASE.NS", "NAUKRI.NS", "NETWORK18.NS", "NUVOCO.NS",
+    "OLECTRA.NS", "ORIENTCEM.NS", "PAISALO.NS", "PCJEWELLER.NS", "PFIZER.NS",
+    "PHOENIXLTD.NS", "POLYMED.NS", "POWERMECH.NS", "PRINCEPIPE.NS",
+    "PRIVISCL.NS", "PROCTER.NS", "RAINBOW.NS", "RAJRATAN.NS", "RATNAMANI.NS",
+    "RAYMOND.NS", "REDINGTON.NS", "RELAXO.NS", "RHIM.NS", "RITES.NS",
+    "ROSSARI.NS", "RPOWER.NS", "SAFARI.NS", "SANGHIIND.NS", "SAPPHIRE.NS",
+    "SEQUENT.NS", "SGBPHARMA.NS", "SHYAMMETL.NS", "SJVN.NS", "SKFINDIA.NS",
+    "SOBHA.NS", "SPARC.NS", "SSWL.NS", "SUBURBANGAS.NS", "SWSOLAR.NS",
+    "SYMPHONY.NS", "TANLA.NS", "TARSONS.NS", "TEAMLEASE.NS", "TECHNOE.NS",
+    "TITAGARH.NS", "TRITURBINE.NS", "TVSSCS.NS", "UJJIVAN.NS", "UNOMINDA.NS",
+    "V2RETAIL.NS", "VAIBHAVGBL.NS", "VEDANTFASH.NS", "VINATIORGA.NS",
+    "VIPIND.NS", "VMART.NS", "VTL.NS", "WESTLIFE.NS", "WHIRLPOOL.NS",
+    "ZENSARTECH.NS", "ZENTEC.NS",
 ]
 
-NIFTY200_TICKERS = list(dict.fromkeys(NIFTY200_TICKERS))
+# Deduplicate
+NIFTY500_TICKERS = list(dict.fromkeys(NIFTY500_TICKERS))
 
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def clean_nan(obj):
-    """Recursively replace NaN/Inf floats with None so JSON stays valid."""
     if isinstance(obj, float) and (math.isnan(obj) or math.isinf(obj)):
         return None
     if isinstance(obj, dict):
@@ -121,23 +158,18 @@ def clean_nan(obj):
 
 
 def safe_float(value, default=None):
-    """Convert to float safely, return default if NaN/None/error."""
     try:
         v = float(value)
-        return default if math.isnan(v) or math.isinf(v) else v
+        return default if (math.isnan(v) or math.isinf(v)) else v
     except Exception:
         return default
 
 
 def get_sector_type(ticker):
-    """Returns 'bank', 'psu', 'capex' or 'standard'."""
     sym = ticker.replace(".NS", "")
-    if sym in BANK_NBFC_TICKERS:
-        return "bank"
-    if sym in PSU_TICKERS:
-        return "psu"
-    if sym in CAPEX_HEAVY_TICKERS:
-        return "capex"
+    if sym in BANK_NBFC_TICKERS:  return "bank"
+    if sym in PSU_TICKERS:        return "psu"
+    if sym in CAPEX_HEAVY_TICKERS: return "capex"
     return "standard"
 
 
@@ -145,31 +177,29 @@ def get_sector_type(ticker):
 
 def passes_quality_filter(ticker, info):
     """
-    Returns (passed: bool, reason: str)
-    If data is unavailable for a metric, we pass through (benefit of the doubt).
+    Returns (passed: bool, reason: str).
+    If data unavailable for a metric → pass through (benefit of the doubt).
     """
-    sym = ticker.replace(".NS", "")
     sector_type = get_sector_type(ticker)
 
-    # ── 1. Revenue growth must be positive ────────────────────────────────────
+    # 1. Revenue growth must be positive
     rev_growth = safe_float(info.get("revenueGrowth"))
     if rev_growth is not None and rev_growth <= 0:
         return False, f"revenue shrinking ({rev_growth*100:.1f}%)"
 
-    # ── 2. Operating cash flow must be positive ────────────────────────────────
-    # Relaxed for capex-heavy sectors (lumpy project cash flows)
+    # 2. Operating cash flow must be positive (skip capex-heavy)
     if sector_type not in ("capex",):
         ocf = safe_float(info.get("operatingCashflow"))
         if ocf is not None and ocf <= 0:
-            return False, f"negative operating cash flow"
+            return False, "negative operating cash flow"
 
-    # ── 3. Net profit margin > 8% (skip for banks — they report differently) ──
+    # 3. Net profit margin > 8% (skip banks — report differently)
     if sector_type == "standard":
         margin = safe_float(info.get("profitMargins"))
         if margin is not None and margin < 0.08:
             return False, f"thin margin ({margin*100:.1f}% < 8%)"
 
-    # ── 4. ROE thresholds by sector type ──────────────────────────────────────
+    # 4. ROE by sector
     roe = safe_float(info.get("returnOnEquity"))
     if roe is not None:
         if sector_type == "bank" and roe < 0.08:
@@ -182,30 +212,28 @@ def passes_quality_filter(ticker, info):
     return True, "ok"
 
 
-# ── Main data fetcher ─────────────────────────────────────────────────────────
+# ── Main scanner ──────────────────────────────────────────────────────────────
 
-def fetch_candidates(n=20):
+def fetch_candidates(n=30):
     """
-    Full pipeline:
-      1. Fetch 3-month price history for all Nifty 200 stocks
-      2. Apply quality pre-filter using fundamentals
-      3. Apply drawdown filter (20–65% below 52W high)
-      4. Apply dual lookback (1M negative, 3M negative but > -40%)
-      5. Detect volume spike (panic selling signal)
-      6. Rank by 1-month decline, return top n
+    Full pipeline for all Nifty 500 stocks:
+      1. Fetch 3-month price history
+      2. Dual lookback filter (1M and 3M both negative, 3M not worse than -40%)
+      3. Drawdown filter (20–65% below 52W high)
+      4. Quality pre-filter (revenue, OCF, margin, ROE — sector-aware)
+      5. Volume spike detection
+      6. Rank by 1M decline, return top n
     """
-    print(f"Scanning {len(NIFTY200_TICKERS)} Nifty 200 stocks...\n")
+    total   = len(NIFTY500_TICKERS)
+    print(f"Scanning {total} Nifty 500 stocks...\n")
 
-    passed_quality   = 0
-    failed_quality   = 0
-    failed_drawdown  = 0
-    failed_lookback  = 0
-    candidates       = []
+    q_passed = q_failed = d_failed = l_failed = 0
+    candidates = []
 
-    for ticker in NIFTY200_TICKERS:
+    for i, ticker in enumerate(NIFTY500_TICKERS, 1):
         sym = ticker.replace(".NS", "")
         try:
-            # ── Fetch 3 months of price history ───────────────────────────────
+            # ── Price history (3 months) ───────────────────────────────────────
             hist = yf.download(ticker, period="3mo", interval="1d",
                                progress=False, auto_adjust=True)
             if hist.empty or len(hist) < 10:
@@ -225,44 +253,33 @@ def fetch_candidates(n=20):
             if math.isnan(current_price):
                 continue
 
-            # ── 1-month change (last ~21 trading days) ─────────────────────────
-            idx_1m = max(0, len(close) - 21)
+            # 1-month change (~21 trading days)
+            idx_1m       = max(0, len(close) - 21)
             price_1m_ago = float(close.iloc[idx_1m])
             if math.isnan(price_1m_ago) or price_1m_ago == 0:
                 continue
             change_1m = ((current_price - price_1m_ago) / price_1m_ago) * 100
 
-            # ── 3-month change ─────────────────────────────────────────────────
+            # 3-month change
             price_3m_ago = float(close.iloc[0])
             if math.isnan(price_3m_ago) or price_3m_ago == 0:
                 continue
             change_3m = ((current_price - price_3m_ago) / price_3m_ago) * 100
 
-            # ── 52-week high (from yfinance info) ──────────────────────────────
-            info = yf.Ticker(ticker).info
+            # ── FILTER: Dual lookback ──────────────────────────────────────────
+            if change_1m >= 0 or change_3m >= 0 or change_3m < -40:
+                l_failed += 1
+                continue
+
+            # ── Fundamentals (needed for quality filter + drawdown) ────────────
+            info     = yf.Ticker(ticker).info
             high_52w = safe_float(info.get("fiftyTwoWeekHigh"))
 
-            # ── FILTER: Dual lookback ──────────────────────────────────────────
-            # Both 1M and 3M must be negative (stock is in a falling trend)
-            # 3M decline must not be worse than -40% (avoid structural collapses)
-            if change_1m >= 0:
-                failed_lookback += 1
-                continue
-            if change_3m >= 0:
-                failed_lookback += 1
-                continue
-            if change_3m < -40:
-                failed_lookback += 1
-                continue
-
-            # ── FILTER: Drawdown from 52W high (20% to 65%) ───────────────────
+            # ── FILTER: Drawdown 20–65% from 52W high ─────────────────────────
             if high_52w and high_52w > 0:
                 drawdown = ((current_price - high_52w) / high_52w) * 100
-                if drawdown > -20:   # Not fallen enough to be interesting
-                    failed_drawdown += 1
-                    continue
-                if drawdown < -65:   # Too far gone — likely structural
-                    failed_drawdown += 1
+                if drawdown > -20 or drawdown < -65:
+                    d_failed += 1
                     continue
             else:
                 drawdown = None
@@ -270,17 +287,15 @@ def fetch_candidates(n=20):
             # ── FILTER: Quality pre-filter ────────────────────────────────────
             passed, reason = passes_quality_filter(ticker, info)
             if not passed:
-                failed_quality += 1
-                print(f"  ✗ {sym:20s} quality fail: {reason}")
+                q_failed += 1
+                print(f"  ✗ {sym:20s}  {reason}")
                 continue
+            q_passed += 1
 
-            passed_quality += 1
-
-            # ── Volume spike detection ────────────────────────────────────────
-            # Compare last 5 days average volume vs 3-month average
-            avg_vol_3m   = float(volume.mean())
-            avg_vol_5d   = float(volume.iloc[-5:].mean())
-            volume_ratio = round(avg_vol_5d / avg_vol_3m, 2) if avg_vol_3m > 0 else None
+            # ── Volume spike ───────────────────────────────────────────────────
+            avg_vol_3m    = float(volume.mean())
+            avg_vol_5d    = float(volume.iloc[-5:].mean())
+            volume_ratio  = round(avg_vol_5d / avg_vol_3m, 2) if avg_vol_3m > 0 else None
             panic_selling = volume_ratio is not None and volume_ratio >= 1.5
 
             candidates.append({
@@ -293,27 +308,31 @@ def fetch_candidates(n=20):
                 "panic_selling": panic_selling,
             })
 
+            # Progress heartbeat every 50 stocks
+            if i % 50 == 0:
+                print(f"  ... {i}/{total} scanned, {len(candidates)} candidates so far")
+
         except Exception as e:
-            print(f"  Skipping {ticker}: {e}")
+            print(f"  Skipping {sym}: {e}")
 
-    # ── Summary ───────────────────────────────────────────────────────────────
-    print(f"\n  Filter summary:")
-    print(f"    Quality pre-filter:  {passed_quality} passed, {failed_quality} failed")
-    print(f"    Drawdown filter:     {failed_drawdown} eliminated")
-    print(f"    Dual lookback:       {failed_lookback} eliminated")
-    print(f"    Candidates left:     {len(candidates)}")
+    print(f"\n  ── Filter summary ───────────────────────────────")
+    print(f"     Dual lookback eliminated:  {l_failed}")
+    print(f"     Drawdown filter eliminated:{d_failed}")
+    print(f"     Quality filter: {q_passed} passed, {q_failed} failed")
+    print(f"     Final candidates:          {len(candidates)}")
 
-    # ── Rank by worst 1-month change, take top n ───────────────────────────────
+    if not candidates:
+        return []
+
     candidates.sort(key=lambda x: x["change_1m"])
     top = candidates[:n]
-    print(f"\n  Top {n} falling knives: {[s['ticker'] for s in top]}\n")
+    print(f"\n  Top {n}: {[s['ticker'] for s in top]}\n")
     return top
 
 
 # ── Fundamentals fetcher ──────────────────────────────────────────────────────
 
 def fetch_fundamentals(ticker_sym):
-    """Fetch detailed fundamentals for a single stock for the Gemini prompt."""
     try:
         info = yf.Ticker(ticker_sym + ".NS").info
 
@@ -366,50 +385,50 @@ def analyse_with_gemini(stocks):
 
     prompt = f"""Today is {today}. You are a senior equity research analyst specialising in Indian markets.
 
-The investor uses a FALLING KNIFE strategy — buying fundamentally strong Nifty 200 stocks that have dropped sharply due to TEMPORARY or MACRO reasons, NOT structural business deterioration.
+The investor uses a FALLING KNIFE strategy — buying fundamentally strong Nifty 500 stocks (large, mid and small cap) that have dropped sharply due to TEMPORARY or MACRO reasons, NOT structural business deterioration.
 
-These stocks have already passed quality filters (positive revenue growth, positive OCF, minimum ROE, appropriate margins). They are also 20–65% below their 52-week highs. Your job is to add intelligence — search for the actual reason behind each fall and score them rigorously.
+These stocks have already passed quality pre-filters (positive revenue growth, positive OCF, minimum ROE, appropriate margins) and are 20–65% below their 52-week highs. Your job is to add intelligence — search for the actual reason behind each fall and score them rigorously.
 
-STOCKS DATA (includes 1M change, 3M change, drawdown from 52W high, and whether panic selling was detected):
+STOCKS DATA (includes 1M change, 3M change, drawdown from 52W high, panic_selling flag):
 {stocks_json}
 
-SCORING RULES (strict — do not inflate scores):
-  +2 if P/E is meaningfully below its 5-year historical average (not just slightly below)
-  +2 if ROE is above 15% (use actual ROE from data provided)
-  +2 if balance sheet is appropriate for sector (D/E < 0.5 for non-financials; for banks use NPA quality)
-  +2 if a SPECIFIC, CONCRETE, DATED catalyst exists within the next 60 days (earnings date, policy decision, order announcement — NOT "sector may recover" or "management may improve guidance")
-  +2 if the fall is clearly macro/sentiment driven (FII selling, crude spike, rate fears, geopolitics) NOT structural (losing market share, revenue decline, management fraud, regulatory action)
+SCORING RULES — be strict, do not inflate:
+  +2 if P/E is meaningfully below 5-year historical average (not marginally)
+  +2 if ROE is above 15%
+  +2 if balance sheet is appropriate for sector (D/E < 0.5 non-financials; NPA quality for banks)
+  +2 if SPECIFIC CONCRETE DATED catalyst within 60 days (earnings date, RBI decision, order win — NOT "may recover" or "sentiment may improve")
+  +2 if fall is clearly macro/sentiment driven (FII selling, crude, rates, geopolitics) NOT structural (losing share, fraud, regulatory ban)
 
-IMPORTANT RULES:
-- If promoter pledging is above 20%, set score to max 4 regardless of other factors. Search for this.
-- If the reason for the fall is a structural business problem (not macro), set macro_driven = false and deduct accordingly.
-- For catalyst_ok = true, the catalyst MUST have a specific date or event. "Sector recovery" or "market sentiment improvement" does NOT count.
-- If panic_selling is true in the data, that is a positive signal (capitulation) — factor it in.
-- Sector concentration: if more than 3 stocks are from the same sector, note this in market_context.
+HARD RULES:
+- If promoter pledging > 20%: cap score at 4, set catalyst_ok = false. Search BSE shareholding for this.
+- catalyst_ok = true ONLY if you found a specific event with a named date or announcement. Vague forward-looking statements do NOT count.
+- If panic_selling = true (volume spike), this is a positive signal — note it in why_fell.
+- Check sector concentration: if more than 4 stocks from the same sector appear, note in market_context.
+- For small-cap stocks (market_cap_cr < 5000): apply extra scrutiny on debt and management quality.
 
-Score 8-10 = Strong Buy (Tranche 1 now). Score 6-7 = Buy (Tranche 1 on confirmation). Score 4-5 = Watch. Below 4 = Avoid.
+Scoring scale: 8-10 = Strong Buy. 6-7 = Buy on confirmation. 4-5 = Watch. <4 = Avoid.
 
-Respond ONLY with valid JSON. No markdown, no explanation, no text outside the JSON object.
+Respond ONLY with a valid JSON object — no markdown, no preamble, no trailing text.
 
 {{
   "date": "{today}",
-  "market_context": "3 sentences: current Nifty 200 macro backdrop, what is driving the selling, and what a falling knife investor should watch for this week",
+  "market_context": "3 sentences: macro backdrop driving the selling, what sectors are most affected, and what falling knife investors should watch this week",
   "stocks": [
     {{
       "ticker": "...",
       "name": "...",
-      "why_fell": "2 specific sentences citing actual recent news or events — no vague statements",
-      "catalyst": "Specific event with date if possible, e.g. 'Q4 results on April 14' or 'RBI policy on June 6'. Write NONE if no concrete catalyst exists.",
-      "promoter_pledge_pct": "X% or Unknown — search for this",
+      "why_fell": "2 specific sentences citing actual recent news — no vague macro statements unless that IS the reason",
+      "catalyst": "Specific event + date if known. Write NONE if no concrete catalyst found.",
+      "promoter_pledge_pct": "X% — search BSE/NSE shareholding data, or write Unknown",
       "value_trap_risk": "low/medium/high — one sentence with specific reason",
       "score": 7,
-      "action": "Strong Buy (Tranche 1)",
-      "thesis_break": "One specific, measurable condition that invalidates this thesis, e.g. 'Revenue growth turns negative in Q4 results'",
+      "action": "Buy (Tranche 1)",
+      "thesis_break": "One specific measurable condition, e.g. 'Q4 revenue growth turns negative' not 'if fundamentals deteriorate'",
       "score_breakdown": {{
         "pe_ok": true,
         "roe_ok": true,
         "debt_ok": true,
-        "catalyst_ok": true,
+        "catalyst_ok": false,
         "macro_driven": true
       }}
     }}
@@ -479,15 +498,14 @@ def save_results(analysis, stocks):
     fund_map = {s["ticker"]: s for s in stocks}
     for stock in analysis["stocks"]:
         fund = fund_map.get(stock["ticker"], {})
-        price_data = fund_map.get(stock["ticker"], {})
         stock.update({
-            "price":            price_data.get("price", "N/A"),
-            "change_1m":        price_data.get("change_1m", "N/A"),
-            "change_3m":        price_data.get("change_3m", "N/A"),
-            "drawdown_52w":     price_data.get("drawdown_52w", "N/A"),
-            "volume_ratio":     price_data.get("volume_ratio", "N/A"),
-            "panic_selling":    price_data.get("panic_selling", False),
-            "name":             fund.get("name", stock["ticker"]),
+            "price":            fund.get("price", "N/A"),
+            "change_1m":        fund.get("change_1m", "N/A"),
+            "change_3m":        fund.get("change_3m", "N/A"),
+            "drawdown_52w":     fund.get("drawdown_52w", "N/A"),
+            "volume_ratio":     fund.get("volume_ratio", "N/A"),
+            "panic_selling":    fund.get("panic_selling", False),
+            "name":             fund.get("name", stock.get("ticker", "")),
             "sector":           fund.get("sector", "N/A"),
             "pe_ratio":         fund.get("pe_ratio", "N/A"),
             "forward_pe":       fund.get("forward_pe", "N/A"),
@@ -503,8 +521,8 @@ def save_results(analysis, stocks):
         })
 
     analysis["generated_at"] = datetime.datetime.now().strftime("%d %b %Y, %I:%M %p IST")
-    analysis["index"]        = "Nifty 200"
-    analysis["version"]      = "2.0"
+    analysis["index"]        = "Nifty 500"
+    analysis["version"]      = "3.0"
 
     clean = clean_nan(analysis)
     with open(OUTPUT_FILE, "w") as f:
@@ -516,27 +534,23 @@ def save_results(analysis, stocks):
 
 def main():
     print(f"\n{'='*55}")
-    print(f"  Nifty 200 Screener v2  —  {datetime.date.today()}")
+    print(f"  Nifty 500 Screener v3  —  {datetime.date.today()}")
     print(f"{'='*55}\n")
 
-    # Step 1: Scan all stocks through the full filter pipeline
-    candidates = fetch_candidates(n=20)
+    candidates = fetch_candidates(n=30)
 
     if not candidates:
-        print("ERROR: No candidates passed all filters — market may be closed or filters too strict.")
+        print("No candidates passed filters — market may be closed or filters too strict.")
         raise SystemExit(1)
 
-    # Step 2: Fetch detailed fundamentals for the 20 candidates
     print("Fetching fundamentals for candidates...")
     for stock in candidates:
         print(f"  {stock['ticker']}")
         stock.update(fetch_fundamentals(stock["ticker"]))
 
-    # Step 3: Gemini analysis
     analysis = analyse_with_gemini(candidates)
-    print(f"\n  Analysis done. {len(analysis.get('stocks', []))} stocks scored.\n")
+    print(f"\n  Scored {len(analysis.get('stocks', []))} stocks.\n")
 
-    # Step 4: Save
     save_results(analysis, candidates)
     print("\nDone! ✓\n")
 
