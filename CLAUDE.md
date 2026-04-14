@@ -49,12 +49,17 @@ Stage 4.5 — Profitability filter (uses cached .info, no extra calls)
         │  Benefit of doubt if any field is missing (None = pass)
         │
         ▼
-Stage 5 — Persistent decline filter (no extra API calls)
+Stage 5 — Trajectory filter (no extra API calls)
         │  Only for market_cap_cr < SMALL_CAP_CR (50,000 Cr — small + mid cap)
-        │  Reject if 1Y < 0% AND 2Y < 5% AND 3Y < 10% (all windows below threshold)
-        │  = consistent multi-year underperformer / weak compounder
-        │  Falls back to 1Y+2Y check when 3Y data unavailable
-        │  Uses price_1y/2y/3y_ago from Stage 3 monthly data
+        │  KEEP if recent trajectory improving (ret_1y > ret_2y)
+        │  — recovering stock = contrarian signal, never reject
+        │  REJECT if trajectory worsening (Condition A):
+        │    ret_3y below threshold AND ret_2y < ret_3y AND ret_1y < ret_2y
+        │    = accelerating decline, each year worse than the last
+        │  REJECT if poor compounder (Condition B):
+        │    all three windows (1Y/2Y/3Y) below their thresholds
+        │    = never delivered returns across any window
+        │  Benefit of doubt if data missing (None = pass through)
         │
         ▼
 Stage 6 — Graham balance-sheet screens (uses cached .info)
@@ -166,7 +171,7 @@ stored on each surviving candidate and written to `data.json`.
 | `MAX_3M_DROP` | `-50.0` | Stage 3: worse than −50% in 3M = freefall, reject |
 | `MAX_1Y_DROP` | `-70.0` | Stage 3: worse than −70% in 1Y = structural decline, reject |
 | `MIN_LISTING_AGE_DAYS` | `365` | Stage 2: stocks listed less than this many days ago are rejected |
-| `SMALL_CAP_CR` | `50000` | Stage 5: market cap (Cr) below which persistent decline check applies (small + mid cap) |
+| `SMALL_CAP_CR` | `50000` | Stage 5: market cap (Cr) below which trajectory filter applies (small + mid cap) |
 | `SMALL_CAP_YOY_DECLINE` | `-0.15` | Legacy constant, kept for reference |
 | `SMALLMID_1Y_RETURN_MIN` | `0.00` | Stage 5: 1Y return must be ≥ 0% |
 | `SMALLMID_2Y_RETURN_MIN` | `0.05` | Stage 5: 2Y return must be ≥ 5% |

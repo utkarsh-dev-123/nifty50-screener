@@ -133,7 +133,8 @@ def fetch_candidates(test=False):
 
     with NSE(download_folder=Path("."), server=False) as nse:
         for s in stage1:
-            sym = s["symbol"]
+            sym    = s["symbol"]
+            passed = True
             try:
                 meta = nse.equityMetaInfo(sym)
                 listing_str = (meta.get("listingDate") or
@@ -152,14 +153,16 @@ def fetch_candidates(test=False):
                     age_days = (today - listing_date).days
                     if age_days < config.MIN_LISTING_AGE_DAYS:
                         age_failed += 1
-                        continue
+                        passed = False
             except Exception:
                 pass  # benefit of doubt if API fails
 
-            stage2.append(s)
-            time.sleep(0.4)
+            time.sleep(0.4)   # always sleep — avoids rate-limiting for both pass and fail
+            if passed:
+                stage2.append(s)
 
-    print(f"  {len(stage2)} stocks passed age filter\n")
+    print(f"  {len(stage2)} stocks passed age filter "
+          f"({age_failed} rejected as too new)\n")
 
     # ── STAGE 3 — Price history + OR momentum filter (yFinance) ──────────────
     print("Stage 3: Downloading price history and applying momentum OR filter...")
@@ -355,8 +358,8 @@ def fetch_candidates(test=False):
 
     print(f"  {len(stage4b)} stocks passed profitability filter\n")
 
-    # ── STAGE 5 — Small cap structural decline (uses Stage 3 prices) ─────────
-    print("Stage 5: Checking small cap structural decline...")
+    # ── STAGE 5 — Trajectory filter (uses Stage 3 prices) ───────────────────
+    print("Stage 5: Checking trajectory and decline pattern...")
     smallcap_failed = 0
     stage5          = []
 
@@ -368,51 +371,69 @@ def fetch_candidates(test=False):
         price_2y_ago  = s.get("price_2y_ago")
         price_3y_ago  = s.get("price_3y_ago")
 
-        # Only apply to stocks below SMALL_CAP_CR threshold (50,000 Cr)
+        # Only apply to stocks below SMALL_CAP_CR (50,000 Cr)
         # Large caps (Reliance, HDFC etc.) are exempt
         if market_cap_cr is not None and market_cap_cr < config.SMALL_CAP_CR:
 
-            # Need at least 2Y of data to apply this check
             if price_1y_ago and price_2y_ago and current_price:
 
                 ret_1y = (current_price - price_1y_ago) / price_1y_ago
                 ret_2y = (current_price - price_2y_ago) / price_2y_ago
 
-                # If 3Y data available, use all three
-                if price_3y_ago:
-                    ret_3y = (current_price - price_3y_ago) / price_3y_ago
+                # If recent trajectory is IMPROVING, always keep —
+                # a recovering stock is exactly the contrarian signal we want
+                recovering = ret_1y > ret_2y
 
-                    # Reject: all three windows below their respective thresholds
-                    # = consistent multi-year underperformer
-                    if (ret_1y < config.SMALLMID_1Y_RETURN_MIN and
+                if not recovering:
+                    # Only check for rejection when trajectory is not improving
+
+                    if price_3y_ago:
+                        ret_3y = (current_price - price_3y_ago) / price_3y_ago
+
+                        # Condition A: accelerating decline
+                        # Each window worse than the longer one
+                        accel_decline = (
+                            ret_3y < config.SMALLMID_3Y_RETURN_MIN and
+                            ret_2y < ret_3y and
+                            ret_1y < ret_2y
+                        )
+
+                        # Condition B: consistently poor compounder
+                        # All three windows below their respective thresholds
+                        poor_compounder = (
+                            ret_1y < config.SMALLMID_1Y_RETURN_MIN and
                             ret_2y < config.SMALLMID_2Y_RETURN_MIN and
-                            ret_3y < config.SMALLMID_3Y_RETURN_MIN):
-                        smallcap_failed += 1
-                        print(f"  x {sym:20s}  "
-                              f"persistent decline "
-                              f"(1Y={ret_1y*100:.0f}% "
-                              f"2Y={ret_2y*100:.0f}% "
-                              f"3Y={ret_3y*100:.0f}%)")
-                        continue
+                            ret_3y < config.SMALLMID_3Y_RETURN_MIN
+                        )
 
-                else:
-                    # Fallback: only 2Y data available
-                    # Reject if both 1Y and 2Y are below their thresholds
-                    if (ret_1y < config.SMALLMID_1Y_RETURN_MIN and
-                            ret_2y < config.SMALLMID_2Y_RETURN_MIN):
-                        smallcap_failed += 1
-                        print(f"  x {sym:20s}  "
-                              f"persistent decline "
-                              f"(1Y={ret_1y*100:.0f}% "
-                              f"2Y={ret_2y*100:.0f}% "
-                              f"3Y=N/A)")
-                        continue
+                        if accel_decline or poor_compounder:
+                            reason = ("accelerating decline"
+                                      if accel_decline
+                                      else "poor compounder")
+                            smallcap_failed += 1
+                            print(f"  x {sym:20s}  {reason} "
+                                  f"(1Y={ret_1y*100:.0f}% "
+                                  f"2Y={ret_2y*100:.0f}% "
+                                  f"3Y={ret_3y*100:.0f}%)")
+                            continue
+
+                    else:
+                        # Only 2Y data available
+                        # Reject if both below thresholds AND not recovering
+                        if (ret_1y < config.SMALLMID_1Y_RETURN_MIN and
+                                ret_2y < config.SMALLMID_2Y_RETURN_MIN):
+                            smallcap_failed += 1
+                            print(f"  x {sym:20s}  poor compounder "
+                                  f"(1Y={ret_1y*100:.0f}% "
+                                  f"2Y={ret_2y*100:.0f}% "
+                                  f"3Y=N/A)")
+                            continue
 
         s["is_small_cap"] = (market_cap_cr is not None and
                              market_cap_cr < config.SMALL_CAP_CR)
         stage5.append(s)
 
-    print(f"  {len(stage5)} stocks passed small cap check\n")
+    print(f"  {len(stage5)} stocks passed trajectory check\n")
 
     # ── STAGE 6 — Graham balance-sheet screens (uses cached .info) ───────────
     print("Stage 6: Applying Graham balance-sheet screens...")
@@ -455,7 +476,7 @@ def fetch_candidates(test=False):
     print(f"  Stage 3  Freefall rejected:       {freefall_failed}")
     print(f"  Stage 4  Drawdown out of range:   {drawdown_failed}")
     print(f"  Stage 4.5 Profitability failed:  {profit_failed}")
-    print(f"  Stage 5  Mid/small persistent decline: {smallcap_failed}")
+    print(f"  Stage 5  Trajectory/decline filter:  {smallcap_failed}")
     print(f"  Stage 6  Graham failed:           {graham_failed}")
     print(f"  Stage 6  Graham passed:           {graham_passed}")
     print(f"  FINAL    Candidates:              {len(candidates)}")
