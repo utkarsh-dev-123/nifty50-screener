@@ -36,6 +36,17 @@ code { font-family: ui-monospace, monospace; font-size: 12px; }
 .logo span { color: #1D9E75; }
 .header-right { display: flex; gap: 12px; align-items: center; }
 .last-run { font-size: 11px; color: #888; }
+#owner-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0.3;
+  padding: 4px 2px;
+  line-height: 1;
+  transition: opacity 0.15s;
+}
+#owner-btn:hover { opacity: 0.7; }
 
 /* ── Market context bar ──────────────────────────────────────────────────── */
 .ctx-bar {
@@ -315,6 +326,7 @@ tr.xrow > td {
   <div class="logo">Falling<span>Knife</span> · Nifty 500</div>
   <div class="header-right">
     <span class="last-run" id="last-run">Loading…</span>
+    <button id="owner-btn" onclick="toggleOwnerMode()" title="Owner mode">🔒</button>
   </div>
 </div>
 
@@ -335,8 +347,8 @@ tr.xrow > td {
     <span class="result-count" id="result-count"></span>
   </div>
   <div class="legend">
-    AI Score appears after clicking Analyse. &nbsp;·&nbsp;
-    Panic selling = recent volume 1.5&times; above 3-month average.
+    AI Score appears after analysis. &nbsp;·&nbsp;
+    Panic selling = volume 1.5&times; above 3-month average.
   </div>
 
   <div id="main-content">
@@ -353,26 +365,70 @@ tr.xrow > td {
 'use strict';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
-// WARNING: A PAT embedded in client-side HTML is visible to anyone who can
-// view the page source. Use this only for a private repository or local dev
-// server. Never commit a real token to a public repo.
+// No PAT is stored here. The owner enters it via the lock button (🔒) and it is
+// kept only in localStorage — never committed to the repository.
 const GITHUB_OWNER  = 'utkarsh-dev-123';
 const GITHUB_REPO   = 'nifty50-screener';
-const GITHUB_PAT    = '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';
-const WORKFLOW_FILE = 'analyse_stock.yml';            // must exist in .github/workflows/
-const GH_REF        = 'main';                        // branch to dispatch on
+const WORKFLOW_FILE = 'analyse_stock.yml';
+const GH_REF        = 'main';
 
 // ── App state ─────────────────────────────────────────────────────────────────
 let allStocks     = [];
 let activeFilter  = 'all';
 let sortCol       = 'change_1m';
 let sortDir       = 'asc';
+let ownerMode     = false;   // true only after PAT validated via lock button
 
 // Per-symbol analysis state.
 // shape: { status: 'idle'|'dispatching'|'polling'|'done'|'error',
 //          timerId, elapsed, report, error }
 const aState   = {};
 const stockMap = {};   // sym -> stock row, populated after data load
+
+// ── Owner mode ────────────────────────────────────────────────────────────────
+async function toggleOwnerMode() {
+  if (ownerMode) {
+    // Lock: clear PAT and hide Analyse buttons
+    localStorage.removeItem('gh_pat');
+    ownerMode = false;
+    document.getElementById('owner-btn').textContent = '🔒';
+    renderTable(filtered());
+    return;
+  }
+
+  // Try saved PAT first, then prompt
+  let pat = localStorage.getItem('gh_pat');
+  if (!pat) {
+    pat = prompt(
+      'Enter your GitHub PAT to enable analysis mode.\n' +
+      'Stored only in this browser — never sent to git.'
+    );
+    if (!pat) return;
+    pat = pat.trim();
+  }
+
+  // Validate by fetching the repo metadata (requires read access at minimum)
+  try {
+    const test = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}`,
+      { headers: { 'Authorization': `Bearer ${pat}`,
+                   'Accept': 'application/vnd.github+json' } }
+    );
+    if (!test.ok) {
+      alert('Invalid PAT or insufficient permissions. Try again.');
+      localStorage.removeItem('gh_pat');
+      return;
+    }
+  } catch (e) {
+    alert('Could not validate PAT: ' + e.message);
+    return;
+  }
+
+  localStorage.setItem('gh_pat', pat);
+  ownerMode = true;
+  document.getElementById('owner-btn').textContent = '🔓';
+  renderTable(filtered());
+}
 
 // ── Utility ───────────────────────────────────────────────────────────────────
 const fmt   = v  => (v === null || v === undefined || v === 'N/A') ? '—' : v;
@@ -537,11 +593,18 @@ function btnHtml(sym) {
     case 'polling':
       return `<button class="btn-an s-working" disabled><span class="spin"></span>Running… ${st.elapsed ? st.elapsed + 's' : ''}</button>`;
     case 'done':
+      // "View report" is visible to everyone
       return `<button class="btn-an s-done" onclick="openRow('${sym}');event.stopPropagation()">View report ↓</button>`;
     case 'error':
-      return `<button class="btn-an s-error" title="${escAttr(st.error||'')}" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Retry ↺</button>`;
+      // Only owner can retry
+      return ownerMode
+        ? `<button class="btn-an s-error" title="${escAttr(st.error||'')}" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Retry ↺</button>`
+        : '';
     default:
-      return `<button class="btn-an s-idle" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Analyse</button>`;
+      // "Analyse" only shown to owner
+      return ownerMode
+        ? `<button class="btn-an s-idle" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Analyse</button>`
+        : '';
   }
 }
 
@@ -553,7 +616,9 @@ function escAttr(s) {
 function panelHtml(sym) {
   const st = aState[sym];
   if (!st || st.status === 'idle') {
-    return `<div class="rp-empty">Click <strong>Analyse</strong> to run a deep three-prompt Gemini analysis for <strong>${sym}</strong>.</div>`;
+    return ownerMode
+      ? `<div class="rp-empty">Click <strong>Analyse</strong> to run a deep three-prompt Gemini analysis for <strong>${sym}</strong>.</div>`
+      : `<div class="rp-empty">No analysis available yet for <strong>${sym}</strong>.</div>`;
   }
   if (st.status === 'dispatching' || st.status === 'polling') {
     return `<div class="rp-loading"><span class="spin" style="width:14px;height:14px;border-width:2px"></span>
@@ -700,11 +765,9 @@ const POLL_MS      = 10_000;   // 10 seconds
 const POLL_TIMEOUT = 36;       // 36 × 10s = 6 minutes max
 
 async function triggerAnalysis(sym) {
-  if (GITHUB_PAT === 'YOUR_PAT_HERE') {
-    alert(
-      'Fill in GITHUB_OWNER, GITHUB_REPO, and GITHUB_PAT\n' +
-      'at the top of this file before using the Analyse feature.'
-    );
+  const pat = localStorage.getItem('gh_pat');
+  if (!pat) {
+    alert('Enable owner mode first (click the 🔒 icon).');
     return;
   }
 
@@ -717,7 +780,7 @@ async function triggerAnalysis(sym) {
       {
         method: 'POST',
         headers: {
-          'Authorization':        `Bearer ${GITHUB_PAT}`,
+          'Authorization':        `Bearer ${pat}`,
           'Accept':               'application/vnd.github+json',
           'Content-Type':         'application/json',
           'X-GitHub-Api-Version': '2022-11-28',
@@ -753,11 +816,11 @@ function showDispatchError(sym, status, detail) {
   openRow(sym);
   const panel = document.getElementById('panel-' + sym);
   if (!panel) return;
-  const hint = status === 401 ? 'Check that GITHUB_PAT is valid and has the "workflow" scope.'
-             : status === 403 ? 'PAT lacks permission. Enable "workflow" scope at github.com/settings/tokens.'
-             : status === 404 ? 'Workflow file not found. Confirm analyse_stock.yml exists in .github/workflows/.'
+  const hint = status === 401 ? 'PAT rejected — click 🔒 to re-enter a valid token with "workflow" scope.'
+             : status === 403 ? 'PAT lacks permission — re-enter a token with "workflow" scope enabled.'
+             : status === 404 ? 'Workflow file not found — confirm analyse_stock.yml exists in .github/workflows/.'
              : status === 422 ? 'Invalid inputs — check the symbol format and that the workflow accepts a "symbol" input.'
-             : 'Check the browser console for details.';
+             : 'Check the browser console (F12) for details.';
   panel.innerHTML = `
     <div style="background:#FCEBEB;border-radius:8px;padding:14px 16px;color:#A32D2D;font-size:13px;line-height:1.6">
       <strong>Dispatch failed${status ? ' (HTTP ' + status + ')' : ''}</strong><br>
