@@ -28,5 +28,5 @@ MAX_1Y_DROP          = -70.0  # worse than -70% in 1Y = structural, reject
 MIN_LISTING_AGE_DAYS = 365    # reject stocks listed < 1 year ago
 
 # Stage 5 — small cap structural decline
-SMALL_CAP_CR          = 5000  # market cap threshold in Crores
+SMALL_CAP_CR          = 500000  # market cap threshold in Crores
 SMALL_CAP_YOY_DECLINE = -0.15 # reject if down 15%+ two years running
