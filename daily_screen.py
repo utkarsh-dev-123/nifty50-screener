@@ -7,7 +7,7 @@ Pipeline:
   Stage 0 — Universe via NseIndiaApi (symbols + live price/pChange)
   Stage 1 — Drop stocks with missing price/pChange (no API calls)
   Stage 2 — Age filter: reject stocks listed < 1 year (NseIndiaApi equityMetaInfo)
-  Stage 3 — Momentum OR filter + freefall reject (yFinance 2y monthly)
+  Stage 3 — Momentum OR filter + freefall reject (yFinance 3y monthly)
   Stage 4 — Fundamentals + 52W drawdown filter (yFinance .info)
   Stage 5 — Small cap structural decline check (uses Stage 3 prices, no extra calls)
   Stage 6 — Graham balance-sheet screens, sector-aware (uses cached .info)
@@ -101,7 +101,7 @@ def fetch_candidates(test=False):
     Run all 8 stages and return a list of candidate dicts sorted by
     change_1m ascending (worst performing first).
     Internal-only fields (_yf_info, price_1y_ago, price_2y_ago,
-    current_price) are stripped before returning.
+    price_3y_ago, current_price) are stripped before returning.
     """
 
     # ── STAGE 0 — Universe ────────────────────────────────────────────────────
@@ -321,7 +321,11 @@ def fetch_candidates(test=False):
         sector     = s.get("sector", "")
 
         # Skip profitability checks for financial sector —
-        # banks and NBFCs report differently (NIM, not margins)
+        # banks and NBFCs report NIM not margins, so standard
+        # margin checks don't apply.
+        # Note: Technology IS checked here unlike Screen 7 —
+        # IT companies should have positive margins even if
+        # current ratio < 2 is structurally normal for them.
         is_financial = sector in (
             "Financial Services", "Banking", "Insurance",
             "Asset Management", "Capital Markets"
@@ -377,33 +381,33 @@ def fetch_candidates(test=False):
 
             if price_1y_ago and price_2y_ago and current_price:
 
-                ret_1y = (current_price - price_1y_ago) / price_1y_ago
-                ret_2y = (current_price - price_2y_ago) / price_2y_ago
+                # Year-by-year returns — each measures ONE specific year,
+                # NOT cumulative from the same endpoint to today
+                yr1_return = (current_price  - price_1y_ago) / price_1y_ago
+                yr2_return = (price_1y_ago   - price_2y_ago) / price_2y_ago
 
-                # If recent trajectory is IMPROVING, always keep —
-                # a recovering stock is exactly the contrarian signal we want
-                recovering = ret_1y > ret_2y
+                if price_3y_ago:
+                    yr3_return = (price_2y_ago - price_3y_ago) / price_3y_ago
 
-                if not recovering:
-                    # Only check for rejection when trajectory is not improving
+                    # Recovering: last year better than the year before,
+                    # OR stock actually went up last year.
+                    # Either signal = contrarian candidate, never reject.
+                    recovering = (yr1_return > yr2_return or yr1_return > 0)
 
-                    if price_3y_ago:
-                        ret_3y = (current_price - price_3y_ago) / price_3y_ago
-
+                    if not recovering:
                         # Condition A: accelerating decline
-                        # Each window worse than the longer one
+                        # yr3 best, yr2 worse, yr1 worst — each year worse
                         accel_decline = (
-                            ret_3y < config.SMALLMID_3Y_RETURN_MIN and
-                            ret_2y < ret_3y and
-                            ret_1y < ret_2y
+                            yr3_return > yr2_return > yr1_return and
+                            yr1_return < config.SMALLMID_1Y_RETURN_MIN
                         )
 
-                        # Condition B: consistently poor compounder
-                        # All three windows below their respective thresholds
+                        # Condition B: poor compounder
+                        # Each individual year below its own threshold
                         poor_compounder = (
-                            ret_1y < config.SMALLMID_1Y_RETURN_MIN and
-                            ret_2y < config.SMALLMID_2Y_RETURN_MIN and
-                            ret_3y < config.SMALLMID_3Y_RETURN_MIN
+                            yr1_return < config.SMALLMID_1Y_RETURN_MIN and
+                            yr2_return < config.SMALLMID_2Y_RETURN_MIN and
+                            yr3_return < config.SMALLMID_3Y_RETURN_MIN
                         )
 
                         if accel_decline or poor_compounder:
@@ -412,21 +416,26 @@ def fetch_candidates(test=False):
                                       else "poor compounder")
                             smallcap_failed += 1
                             print(f"  x {sym:20s}  {reason} "
-                                  f"(1Y={ret_1y*100:.0f}% "
-                                  f"2Y={ret_2y*100:.0f}% "
-                                  f"3Y={ret_3y*100:.0f}%)")
+                                  f"(yr1={yr1_return*100:.0f}% "
+                                  f"yr2={yr2_return*100:.0f}% "
+                                  f"yr3={yr3_return*100:.0f}%)")
                             continue
 
-                    else:
-                        # Only 2Y data available
-                        # Reject if both below thresholds AND not recovering
-                        if (ret_1y < config.SMALLMID_1Y_RETURN_MIN and
-                                ret_2y < config.SMALLMID_2Y_RETURN_MIN):
+                else:
+                    # Only 2Y data — no yr3
+                    recovering = (yr1_return > yr2_return or yr1_return > 0)
+
+                    if not recovering:
+                        poor_compounder = (
+                            yr1_return < config.SMALLMID_1Y_RETURN_MIN and
+                            yr2_return < config.SMALLMID_2Y_RETURN_MIN
+                        )
+                        if poor_compounder:
                             smallcap_failed += 1
                             print(f"  x {sym:20s}  poor compounder "
-                                  f"(1Y={ret_1y*100:.0f}% "
-                                  f"2Y={ret_2y*100:.0f}% "
-                                  f"3Y=N/A)")
+                                  f"(yr1={yr1_return*100:.0f}% "
+                                  f"yr2={yr2_return*100:.0f}% "
+                                  f"yr3=N/A)")
                             continue
 
         s["is_small_cap"] = (market_cap_cr is not None and

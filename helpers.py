@@ -106,9 +106,15 @@ def get_nifty500_tickers():
 
 # ── Graham balance-sheet screens ─────────────────────────────────────────────
 
-FINANCIAL_SECTORS = {
+# Sectors where currentRatio < 2 is structurally normal:
+# Financial: leverage is their core business model
+# Technology / Communication Services: asset-light,
+#   low working capital, subscription/service revenue
+SCREEN7_EXEMPT_SECTORS = {
     "Financial Services", "Banking", "Insurance",
     "Asset Management", "Capital Markets",
+    "Technology",
+    "Communication Services",
 }
 
 
@@ -118,12 +124,13 @@ def passes_graham_screens(ticker, info):
     Missing data → None (benefit of the doubt; treated as passing).
 
     Screen 6: debtToEquity < 100  (yFinance reports D/E as %, 100 ≡ 1.0×)
-    Screen 7: currentRatio > 2.0  (skipped for financial-sector stocks)
+    Screen 7: currentRatio > 2.0  (skipped for SCREEN7_EXEMPT_SECTORS —
+      financials and asset-light tech/services where metric is not meaningful)
     Screen 8: totalDebt < 2 × (currentAssets − totalLiabilities)
     """
     failures = []
-    sector     = info.get("sector", "")
-    is_financial = sector in FINANCIAL_SECTORS
+    sector       = info.get("sector", "")
+    is_financial = sector in SCREEN7_EXEMPT_SECTORS
 
     # Screen 6 — debt-to-equity
     de = safe_float(info.get("debtToEquity"))
@@ -134,9 +141,11 @@ def passes_graham_screens(ticker, info):
     else:
         s6 = None
 
-    # Screen 7 — current ratio (not applicable to financial sector)
-    if is_financial:
-        s7 = None  # benefit of doubt — metric not meaningful for financials
+    # Screen 7 — current ratio
+    # Skipped for financial sector AND asset-light sectors (Technology,
+    # Communication Services) where ratio < 2 is structurally normal
+    if sector in SCREEN7_EXEMPT_SECTORS:
+        s7 = None  # benefit of doubt — metric not meaningful here
     else:
         cr = safe_float(info.get("currentRatio"))
         if cr is not None:
