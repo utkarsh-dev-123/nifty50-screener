@@ -93,6 +93,45 @@ code { font-family: ui-monospace, monospace; font-size: 12px; }
 .result-count { font-size: 12px; color: #aaa; margin-left: auto; }
 .legend { font-size: 11px; color: #aaa; margin-bottom: 14px; line-height: 1.6; }
 
+/* ── Sector view ─────────────────────────────────────────────────────────── */
+.sector-group {
+  margin-bottom: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  overflow: hidden;
+  background: #fff;
+}
+.sector-header {
+  padding: 10px 16px;
+  background: #faf9f7;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  user-select: none;
+}
+.sector-header:hover { background: #f3f2ee; }
+.sector-name { color: #1a1a18; }
+.sector-count {
+  font-size: 11px;
+  background: #e8e8e4;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 400;
+  color: #888;
+}
+.sector-body { display: none; }
+.sector-body.open { display: block; }
+.sector-chevron {
+  margin-left: auto;
+  font-size: 10px;
+  color: #aaa;
+  transition: transform 0.2s;
+}
+.sector-header.open .sector-chevron { transform: rotate(180deg); }
+
 /* ── Table ───────────────────────────────────────────────────────────────── */
 .tbl-scroll {
   overflow-x: auto;
@@ -344,6 +383,7 @@ tr.xrow > td {
     <button class="f-btn" onclick="setFilter('deep40',this)">Drop &gt;40%</button>
     <button class="f-btn" onclick="setFilter('mid',this)">Drop 25–40%</button>
     <button class="f-btn" onclick="setFilter('analysed',this)">Analysed</button>
+    <button class="f-btn" id="sector-btn" onclick="toggleSectorView(this)">By Sector</button>
     <span class="result-count" id="result-count"></span>
   </div>
   <div class="legend">
@@ -378,12 +418,20 @@ let activeFilter  = 'all';
 let sortCol       = 'change_1m';
 let sortDir       = 'asc';
 let ownerMode     = false;   // true only after PAT validated via lock button
+let sectorView    = false;   // true when "By Sector" is active
 
 // Per-symbol analysis state.
 // shape: { status: 'idle'|'dispatching'|'polling'|'done'|'error',
 //          timerId, elapsed, report, error }
 const aState   = {};
 const stockMap = {};   // sym -> stock row, populated after data load
+
+// ── Sector-view toggle ────────────────────────────────────────────────────────
+function toggleSectorView(btn) {
+  sectorView = !sectorView;
+  btn.classList.toggle('on', sectorView);
+  renderTable(filtered());
+}
 
 // ── Owner mode ────────────────────────────────────────────────────────────────
 async function toggleOwnerMode() {
@@ -528,6 +576,8 @@ function renderTable(stocks) {
     return;
   }
 
+  if (sectorView) { renderBySector(stocks, el); return; }
+
   // thead
   const ths = COLS.map(c => {
     if (!c.sort) return `<th></th>`;
@@ -547,6 +597,57 @@ function renderTable(stocks) {
         <tbody id="tbody">${rows}</tbody>
       </table>
     </div>`;
+  updateStickyOffset();
+}
+
+function renderBySector(stocks, el) {
+  // Group by sector
+  const groups = stocks.reduce((acc, s) => {
+    const sector = s.sector || 'Unknown';
+    if (!acc[sector]) acc[sector] = [];
+    acc[sector].push(s);
+    return acc;
+  }, {});
+
+  // Sort sectors by stock count descending
+  const sorted = Object.entries(groups).sort((a, b) => b[1].length - a[1].length);
+
+  // Shared thead HTML (no sticky offset needed inside sector mini-tables)
+  const ths = COLS.map(c => {
+    if (!c.sort) return `<th></th>`;
+    const active = sortCol === c.key;
+    const icon   = active ? (sortDir === 'asc' ? '↑' : '↓') : '↕';
+    const cls    = `sortable${active ? ' sort-' + sortDir : ''}`;
+    return `<th class="${cls}" onclick="toggleSort('${c.key}')">${c.label}<i class="si">${icon}</i></th>`;
+  }).join('');
+
+  el.innerHTML = sorted.map(([sector, sectorStocks]) => {
+    const hasPanic = sectorStocks.some(s => s.panic_selling);
+    const rows     = sectorStocks.map(s => dataRow(s) + expandRow(s.ticker)).join('');
+    const count    = sectorStocks.length;
+    return `
+    <div class="sector-group">
+      <div class="sector-header" onclick="toggleSector(this)">
+        <span class="sector-name">${sector}</span>
+        <span class="sector-count">${count} stock${count !== 1 ? 's' : ''}</span>
+        ${hasPanic ? '<span title="Panic selling detected">🔥</span>' : ''}
+        <span class="sector-chevron">▼</span>
+      </div>
+      <div class="sector-body">
+        <div class="tbl-scroll" style="border-radius:0;border:none;border-top:1px solid rgba(0,0,0,0.06)">
+          <table>
+            <thead style="position:static"><tr>${ths}</tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleSector(headerEl) {
+  headerEl.classList.toggle('open');
+  headerEl.nextElementSibling.classList.toggle('open');
 }
 
 function dataRow(s) {
