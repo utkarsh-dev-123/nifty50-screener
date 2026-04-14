@@ -1,7 +1,7 @@
 # ── Screener configuration ────────────────────────────────────────────────────
 
 # Drawdown filter: stock must be between DROP_MIN and DROP_MAX below 52W high
-DROP_MIN = 0.25          # 25% below 52W high (minimum drawdown to qualify)
+DROP_MIN = 0.20          # 25% below 52W high (minimum drawdown to qualify)
 DROP_MAX = 0.65          # 65% below 52W high (maximum — beyond this = value trap risk)
 
 # Graham balance-sheet screens
