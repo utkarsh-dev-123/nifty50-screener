@@ -751,7 +751,7 @@ function startPolling(sym) {
     if (btnEl) btnEl.innerHTML = btnHtml(sym);
 
     try {
-      const res = await fetch(`../analysis/${sym}.json?t=${Date.now()}`);
+      const res = await fetch(`https://raw.githubusercontent.com/utkarsh-dev-123/nifty50-screener/main/analysis/${sym}.json?t=${Date.now()}`);
       if (res.ok) {
         clearInterval(timerId);
         const report = await res.json();
@@ -770,7 +770,7 @@ function startPolling(sym) {
 // ── Load data.json ────────────────────────────────────────────────────────────
 async function loadData() {
   try {
-    const res = await fetch('../data.json?t=' + Date.now());
+    const res = await fetch('https://raw.githubusercontent.com/utkarsh-dev-123/nifty50-screener/main/data.json?t=' + Date.now());
     if (!res.ok) throw new Error(`HTTP ${res.status} — data.json not found`);
     const data = await res.json();
 
@@ -794,7 +794,7 @@ async function loadData() {
     document.getElementById('main-content').innerHTML = `
       <div class="state">
         <div class="state-icon">◎</div>
-        <div>Could not load <code>../data.json</code></div>
+        <div>Could not load <code>data.json</code></div>
         <div style="margin-top:8px;font-size:12px;color:#bbb">
           Run the screener first, then refresh.<br>
           <code>${err.message}</code>
