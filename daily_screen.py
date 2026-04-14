@@ -212,7 +212,7 @@ def fetch_candidates(test=False):
             # Store prices for Stage 5 persistent decline check
             price_1y_ago = float(close.iloc[-13]) if len(close) >= 13 else None
             price_2y_ago = float(close.iloc[-25]) if len(close) >= 25 else None
-            price_3y_ago = float(close.iloc[-37]) if len(close) >= 37 else None
+            price_3y_ago = float(close.iloc[-36]) if len(close) >= 36 else None
 
             # OR trigger: keep stock if ANY condition met
             pChange = s["pChange"]
