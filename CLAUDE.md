@@ -43,8 +43,8 @@ Stage 4 — yFinance .info (fundamentals)
         ▼
 Stage 5 — Persistent decline filter (no extra API calls)
         │  Only for market_cap_cr < SMALL_CAP_CR (50,000 Cr — small + mid cap)
-        │  Reject if 1Y, 2Y AND 3Y cumulative returns are all negative
-        │  = stock has never recovered over any multi-year window
+        │  Reject if 1Y < 0% AND 2Y < 5% AND 3Y < 10% (all windows below threshold)
+        │  = consistent multi-year underperformer / weak compounder
         │  Falls back to 1Y+2Y check when 3Y data unavailable
         │  Uses price_1y/2y/3y_ago from Stage 3 monthly data
         │
@@ -160,7 +160,9 @@ stored on each surviving candidate and written to `data.json`.
 | `MIN_LISTING_AGE_DAYS` | `365` | Stage 2: stocks listed less than this many days ago are rejected |
 | `SMALL_CAP_CR` | `50000` | Stage 5: market cap (Cr) below which persistent decline check applies (small + mid cap) |
 | `SMALL_CAP_YOY_DECLINE` | `-0.15` | Legacy constant, kept for reference |
-| `SMALLMID_3Y_RETURN_MIN` | `0.0` | Stage 5: reject if 1Y, 2Y, and 3Y cumulative returns are all below this threshold |
+| `SMALLMID_1Y_RETURN_MIN` | `0.00` | Stage 5: 1Y return must be ≥ 0% |
+| `SMALLMID_2Y_RETURN_MIN` | `0.05` | Stage 5: 2Y return must be ≥ 5% |
+| `SMALLMID_3Y_RETURN_MIN` | `0.10` | Stage 5: 3Y return must be ≥ 10%; reject if ALL three windows fail |
 
 ---
 

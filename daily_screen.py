@@ -330,10 +330,10 @@ def fetch_candidates(test=False):
                 if price_3y_ago:
                     ret_3y = (current_price - price_3y_ago) / price_3y_ago
 
-                    # Reject: negative returns across ALL three windows
+                    # Reject: all three windows below their respective thresholds
                     # = consistent multi-year underperformer
-                    if (ret_1y < config.SMALLMID_3Y_RETURN_MIN and
-                            ret_2y < config.SMALLMID_3Y_RETURN_MIN and
+                    if (ret_1y < config.SMALLMID_1Y_RETURN_MIN and
+                            ret_2y < config.SMALLMID_2Y_RETURN_MIN and
                             ret_3y < config.SMALLMID_3Y_RETURN_MIN):
                         smallcap_failed += 1
                         print(f"  x {sym:20s}  "
@@ -345,9 +345,9 @@ def fetch_candidates(test=False):
 
                 else:
                     # Fallback: only 2Y data available
-                    # Reject if both 1Y and 2Y are negative
-                    if (ret_1y < config.SMALLMID_3Y_RETURN_MIN and
-                            ret_2y < config.SMALLMID_3Y_RETURN_MIN):
+                    # Reject if both 1Y and 2Y are below their thresholds
+                    if (ret_1y < config.SMALLMID_1Y_RETURN_MIN and
+                            ret_2y < config.SMALLMID_2Y_RETURN_MIN):
                         smallcap_failed += 1
                         print(f"  x {sym:20s}  "
                               f"persistent decline "

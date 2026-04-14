@@ -30,4 +30,7 @@ MIN_LISTING_AGE_DAYS = 365    # reject stocks listed < 1 year ago
 # Stage 5 — persistent decline filter (small + mid cap)
 SMALL_CAP_CR           = 50000 # market cap threshold in Crores (covers small + mid cap)
 SMALL_CAP_YOY_DECLINE  = -0.15 # legacy constant, kept for reference
-SMALLMID_3Y_RETURN_MIN = 0.0   # reject if 3Y cumulative return < 0% (never recovered)
+SMALLMID_1Y_RETURN_MIN = 0.00  # 1Y cumulative return must be ≥ 0%
+SMALLMID_2Y_RETURN_MIN = 0.05  # 2Y cumulative return must be ≥ 5%
+SMALLMID_3Y_RETURN_MIN = 0.10  # 3Y cumulative return must be ≥ 10%
+# Reject if ALL three windows are below their respective thresholds (weak compounder)
