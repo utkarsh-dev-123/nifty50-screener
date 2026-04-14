@@ -658,7 +658,15 @@ function dataRow(s) {
 
   return `
   <tr class="data-row" id="dr-${sym}" onclick="toggleRow('${sym}',event)">
-    <td class="c-ticker">${sym}</td>
+    <td class="c-ticker">
+      <a href="https://www.screener.in/company/${sym}/"
+         target="_blank"
+         rel="noopener noreferrer"
+         style="color:inherit;text-decoration:none;border-bottom:1px dotted #aaa"
+         onclick="event.stopPropagation()">
+        ${sym}
+      </a>
+    </td>
     <td class="c-name" title="${s.name||''}">${fmt(s.name)}</td>
     <td class="c-muted">${fmt(s.sector)}</td>
     <td>₹${fmt(s.price)}</td>
