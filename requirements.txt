@@ -1,2 +1,4 @@
-google-genai>=0.8.0
-yfinance>=0.2.38
+nse[local]
+yfinance
+google-genai
+pandas

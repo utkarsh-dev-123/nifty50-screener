@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python main.py --test)",
+      "Bash(pip install:*)",
+      "Bash(python -c \"import os; print\\(bool\\(os.environ.get\\('GEMINI_API_KEY'\\)\\)\\)\")",
+      "Bash(python daily_screen.py --test)"
+    ]
+  }
+}

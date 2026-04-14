@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falling Knife · Nifty 500</title>
+<style>
+/* ── Reset ───────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Base ────────────────────────────────────────────────────────────────── */
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: #f5f4f0;
+  color: #1a1a18;
+  min-height: 100vh;
+  font-size: 14px;
+}
+code { font-family: ui-monospace, monospace; font-size: 12px; }
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.header {
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+.logo { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.logo span { color: #1D9E75; }
+.header-right { display: flex; gap: 12px; align-items: center; }
+.last-run { font-size: 11px; color: #888; }
+
+/* ── Market context bar ──────────────────────────────────────────────────── */
+.ctx-bar {
+  background: #fff;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  padding: 10px 20px;
+  font-size: 13px;
+  color: #5F5E5A;
+  line-height: 1.6;
+  display: none;
+}
+.ctx-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #aaa;
+  margin-bottom: 2px;
+}
+
+/* ── Page body ───────────────────────────────────────────────────────────── */
+.page { max-width: 1400px; margin: 0 auto; padding: 20px 16px 40px; }
+
+/* ── Controls row ────────────────────────────────────────────────────────── */
+.controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.f-btn {
+  font-size: 12px;
+  padding: 5px 14px;
+  border-radius: 99px;
+  border: 1px solid rgba(0,0,0,0.15);
+  background: transparent;
+  color: #5F5E5A;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.f-btn:hover { border-color: rgba(0,0,0,0.3); }
+.f-btn.on { background: #1a1a18; color: #fff; border-color: transparent; }
+.result-count { font-size: 12px; color: #aaa; margin-left: auto; }
+
+/* ── Table ───────────────────────────────────────────────────────────────── */
+.tbl-scroll {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.08);
+  background: #fff;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+/* Sticky header sits below the page header (57px) */
+thead { position: sticky; top: 57px; z-index: 20; }
+
+th {
+  background: #faf9f7;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #aaa;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  white-space: nowrap;
+  user-select: none;
+}
+th.sortable { cursor: pointer; }
+th.sortable:hover { color: #5F5E5A; }
+th .si { margin-left: 3px; font-style: normal; opacity: 0.35; }
+th.sort-asc .si,
+th.sort-desc .si { opacity: 1; color: #1D9E75; }
+
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+tr.data-row:last-of-type td { border-bottom: none; }
+
+/* Row hover / open state */
+tr.data-row { cursor: pointer; }
+tr.data-row:hover > td { background: #faf9f7; }
+tr.data-row.open > td {
+  background: #f3f2ee;
+  border-bottom: none;
+}
+
+/* ── Cell helpers ────────────────────────────────────────────────────────── */
+.c-ticker { font-weight: 600; }
+.c-name   { color: #5F5E5A; max-width: 160px; overflow: hidden; text-overflow: ellipsis; }
+.c-muted  { color: #aaa; }
+.c-neg    { color: #A32D2D; font-weight: 500; }
+.c-pos    { color: #2D7A3A; font-weight: 500; }
+
+.score-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+}
+.sc-buy   { background: #EAF3DE; color: #3B6D11; }
+.sc-watch { background: #FAEEDA; color: #854F0B; }
+.sc-avoid { background: #FCEBEB; color: #A32D2D; }
+.sc-none  { background: #f1f0ec; color: #bbb; }
+
+/* ── Analyse button ──────────────────────────────────────────────────────── */
+.btn-an {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 11px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: opacity 0.12s;
+  white-space: nowrap;
+}
+.btn-an:disabled { cursor: default; opacity: 0.8; }
+.s-idle        { background: #EEF3FB; color: #1D5FA0; }
+.s-idle:hover  { background: #DCE9F5; }
+.s-working     { background: #FFF4E5; color: #854F0B; }
+.s-done        { background: #EAF3DE; color: #3B6D11; }
+.s-error       { background: #FCEBEB; color: #A32D2D; }
+
+/* Inline spinner */
+.spin {
+  width: 9px; height: 9px;
+  border: 1.5px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: rotate 0.65s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+
+/* ── Expand row ──────────────────────────────────────────────────────────── */
+tr.xrow { display: none; }
+tr.xrow.open { display: table-row; }
+tr.xrow > td {
+  padding: 0;
+  background: #f3f2ee;
+  border-bottom: 2px solid rgba(29,158,117,0.18);
+}
+
+/* ── Report panel ────────────────────────────────────────────────────────── */
+.rp { padding: 20px 24px; }
+.rp-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #888;
+  font-size: 13px;
+  padding: 36px;
+}
+.rp-empty {
+  text-align: center;
+  color: #bbb;
+  font-size: 13px;
+  padding: 28px 20px;
+}
+
+/* Report grid */
+.rp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 12px;
+}
+.rp-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.rp-card-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #aaa;
+  margin-bottom: 8px;
+}
+.rp-big {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.rp-sub { font-size: 14px; font-weight: 400; color: #aaa; }
+.rp-action {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+.ap-buy   { background: #EAF3DE; color: #3B6D11; }
+.ap-watch { background: #FAEEDA; color: #854F0B; }
+.ap-avoid { background: #FCEBEB; color: #A32D2D; }
+
+.rp-text  { font-size: 13px; color: #5F5E5A; line-height: 1.6; }
+.rp-label { font-size: 11px; font-weight: 600; color: #1a1a18; margin: 10px 0 3px; }
+.rp-list  { list-style: none; }
+.rp-list li { font-size: 12px; color: #5F5E5A; padding: 1px 0; }
+.rp-list li::before { content: "·"; margin-right: 6px; color: #ccc; }
+
+/* Score breakdown pills */
+.sb-row { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.sb {
+  font-size: 11px; padding: 2px 8px;
+  border-radius: 99px; border: 1px solid;
+}
+.sb-y { background: #EAF3DE; color: #3B6D11; border-color: #c2e0ac; }
+.sb-n { background: #FCEBEB; color: #A32D2D; border-color: #f5c2c2; }
+
+/* Exit box */
+.exit-box {
+  background: #FFF4E5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #854F0B;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+/* Report meta */
+.rp-meta { font-size: 11px; color: #bbb; margin-bottom: 14px; }
+
+/* ── State / empty ───────────────────────────────────────────────────────── */
+.state {
+  text-align: center;
+  padding: 64px 20px;
+  color: #888;
+  font-size: 14px;
+}
+.state-icon { font-size: 36px; opacity: 0.25; margin-bottom: 12px; }
+.big-spin {
+  width: 28px; height: 28px;
+  border: 2px solid rgba(0,0,0,0.1);
+  border-top-color: #1D9E75;
+  border-radius: 50%;
+  animation: rotate 0.7s linear infinite;
+  margin: 0 auto 12px;
+}
+
+/* ── Disclaimer ──────────────────────────────────────────────────────────── */
+.disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: #bbb;
+  padding: 20px 20px 32px;
+  line-height: 1.7;
+}
+</style>
+</head>
+<body>
+
+<!-- ── Header ──────────────────────────────────────────────────────────────── -->
+<div class="header">
+  <div class="logo">Falling<span>Knife</span> · Nifty 500</div>
+  <div class="header-right">
+    <span class="last-run" id="last-run">Loading…</span>
+  </div>
+</div>
+
+<!-- ── Market context (Gemini run only) ────────────────────────────────────── -->
+<div class="ctx-bar" id="ctx-bar">
+  <div class="ctx-label">Market context</div>
+  <div id="ctx-text"></div>
+</div>
+
+<!-- ── Page body ───────────────────────────────────────────────────────────── -->
+<div class="page">
+  <div class="controls">
+    <button class="f-btn on" onclick="setFilter('all',this)">All</button>
+    <button class="f-btn" onclick="setFilter('buy',this)">Buy ≥7</button>
+    <button class="f-btn" onclick="setFilter('watch',this)">Watch 5–6</button>
+    <button class="f-btn" onclick="setFilter('avoid',this)">&lt;5 Avoid</button>
+    <button class="f-btn" onclick="setFilter('panic',this)">Panic selling</button>
+    <span class="result-count" id="result-count"></span>
+  </div>
+
+  <div id="main-content">
+    <div class="state"><div class="big-spin"></div>Loading screener data…</div>
+  </div>
+
+  <div class="disclaimer">
+    Not investment advice. Always do your own research and consult a SEBI-registered
+    advisor before investing.
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// ── Configuration ─────────────────────────────────────────────────────────────
+// WARNING: A PAT embedded in client-side HTML is visible to anyone who can
+// view the page source. Use this only for a private repository or local dev
+// server. Never commit a real token to a public repo.
+const GITHUB_OWNER  = 'utkarsh-dev-123';
+const GITHUB_REPO   = 'nifty50-screener';
+const GITHUB_PAT    = 'YOUR_PAT_HERE';  // generate at github.com/settings/tokens (needs workflow scope)
+const WORKFLOW_FILE = 'analyse_stock.yml';            // must exist in .github/workflows/
+const GH_REF        = 'main';                        // branch to dispatch on
+
+// ── App state ─────────────────────────────────────────────────────────────────
+let allStocks     = [];
+let activeFilter  = 'all';
+let sortCol       = 'change_1m';
+let sortDir       = 'asc';
+
+// Per-symbol analysis state.
+// shape: { status: 'idle'|'dispatching'|'polling'|'done'|'error',
+//          timerId, elapsed, report, error }
+const aState = {};
+
+// ── Utility ───────────────────────────────────────────────────────────────────
+const fmt   = v  => (v === null || v === undefined || v === 'N/A') ? '—' : v;
+const fmtPct = v => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(1) + '%'; };
+const fmtNum = v => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(1); };
+
+function scoreClass(s) {
+  return s >= 7 ? 'buy' : s >= 5 ? 'watch' : 'avoid';
+}
+function actionClass(a) {
+  const l = (a || '').toLowerCase();
+  return l.includes('buy') ? 'ap-buy' : l.includes('watch') ? 'ap-watch' : 'ap-avoid';
+}
+function numVal(stock, col) {
+  const n = parseFloat(stock[col]);
+  return isNaN(n) ? -Infinity : n;
+}
+
+// ── Sort + filter ─────────────────────────────────────────────────────────────
+const STR_COLS = new Set(['ticker', 'name', 'sector']);
+
+function sorted(stocks) {
+  return [...stocks].sort((a, b) => {
+    if (STR_COLS.has(sortCol)) {
+      const av = (a[sortCol] || '').toLowerCase();
+      const bv = (b[sortCol] || '').toLowerCase();
+      return sortDir === 'asc' ? av.localeCompare(bv) : bv.localeCompare(av);
+    }
+    const av = numVal(a, sortCol), bv = numVal(b, sortCol);
+    return sortDir === 'asc' ? av - bv : bv - av;
+  });
+}
+
+function filtered() {
+  let s = allStocks;
+  if (activeFilter === 'buy')   s = s.filter(x => x._score >= 7);
+  if (activeFilter === 'watch') s = s.filter(x => x._score >= 5 && x._score < 7);
+  if (activeFilter === 'avoid') s = s.filter(x => x._score < 5 && !isNaN(x._score));
+  if (activeFilter === 'panic') s = s.filter(x => x.panic_selling);
+  return sorted(s);
+}
+
+function setFilter(type, btn) {
+  activeFilter = type;
+  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTable(filtered());
+}
+
+function toggleSort(col) {
+  if (sortCol === col) {
+    sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+  } else {
+    sortCol = col;
+    sortDir = STR_COLS.has(col) ? 'asc' : 'desc';
+  }
+  renderTable(filtered());
+}
+
+// ── Table columns ─────────────────────────────────────────────────────────────
+const COLS = [
+  { key: 'ticker',          label: 'Ticker',    sort: true },
+  { key: 'name',            label: 'Name',      sort: true },
+  { key: 'sector',          label: 'Sector',    sort: true },
+  { key: 'price',           label: 'Price ₹',   sort: true },
+  { key: 'change_1m',       label: '1M %',      sort: true },
+  { key: 'change_3m',       label: '3M %',      sort: true },
+  { key: 'drawdown_52w',    label: '52W ↓%',    sort: true },
+  { key: 'pe_ratio',        label: 'P/E',       sort: true },
+  { key: 'roe',             label: 'ROE %',     sort: true },
+  { key: 'debt_to_equity',  label: 'D/E',       sort: true },
+  { key: 'market_cap_cr',   label: 'MCap Cr',   sort: true },
+  { key: 'score',           label: 'Score',     sort: true },
+  { key: '_btn',            label: '',          sort: false },
+];
+const N_COLS = COLS.length;
+
+// ── Table render ──────────────────────────────────────────────────────────────
+function renderTable(stocks) {
+  const el = document.getElementById('main-content');
+  document.getElementById('result-count').textContent =
+    stocks.length ? `${stocks.length} stock${stocks.length !== 1 ? 's' : ''}` : '';
+
+  if (!stocks.length) {
+    el.innerHTML = '<div class="state"><div class="state-icon">◎</div>No stocks match this filter.</div>';
+    return;
+  }
+
+  // thead
+  const ths = COLS.map(c => {
+    if (!c.sort) return `<th></th>`;
+    const active = sortCol === c.key;
+    const icon   = active ? (sortDir === 'asc' ? '↑' : '↓') : '↕';
+    const cls    = `sortable${active ? ' sort-' + sortDir : ''}`;
+    return `<th class="${cls}" onclick="toggleSort('${c.key}')">${c.label}<i class="si">${icon}</i></th>`;
+  }).join('');
+
+  // rows (data + expand pairs)
+  const rows = stocks.map(s => dataRow(s) + expandRow(s.ticker)).join('');
+
+  el.innerHTML = `
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr>${ths}</tr></thead>
+        <tbody id="tbody">${rows}</tbody>
+      </table>
+    </div>`;
+}
+
+function dataRow(s) {
+  const sym   = s.ticker;
+  const score = s._score;
+  const sc    = isNaN(score) ? 'none' : scoreClass(score);
+  const scoreCell = isNaN(score)
+    ? `<span class="score-pill sc-none">—</span>`
+    : `<span class="score-pill sc-${sc}">${score}</span>`;
+
+  const c1m = parseFloat(s.change_1m);
+  const c3m = parseFloat(s.change_3m);
+  const dd  = parseFloat(s.drawdown_52w);
+
+  return `
+  <tr class="data-row" id="dr-${sym}" onclick="toggleRow('${sym}',event)">
+    <td class="c-ticker">${sym}</td>
+    <td class="c-name" title="${s.name||''}">${fmt(s.name)}</td>
+    <td class="c-muted">${fmt(s.sector)}</td>
+    <td>₹${fmt(s.price)}</td>
+    <td class="${isNaN(c1m)?'c-muted':c1m<0?'c-neg':'c-pos'}">${isNaN(c1m)?'—':c1m.toFixed(1)+'%'}</td>
+    <td class="${isNaN(c3m)?'c-muted':c3m<0?'c-neg':'c-pos'}">${isNaN(c3m)?'—':c3m.toFixed(1)+'%'}</td>
+    <td class="${isNaN(dd)?'c-muted':dd<-40?'c-neg':'c-muted'}">${isNaN(dd)?'—':dd.toFixed(1)+'%'}</td>
+    <td>${fmt(s.pe_ratio)}</td>
+    <td>${fmt(s.roe)}</td>
+    <td>${fmt(s.debt_to_equity)}</td>
+    <td>${fmt(s.market_cap_cr)}</td>
+    <td>${scoreCell}</td>
+    <td id="btn-${sym}">${btnHtml(sym)}</td>
+  </tr>`;
+}
+
+function expandRow(sym) {
+  return `
+  <tr class="xrow" id="xr-${sym}">
+    <td colspan="${N_COLS}">
+      <div id="panel-${sym}" class="rp">
+        ${panelHtml(sym)}
+      </div>
+    </td>
+  </tr>`;
+}
+
+// ── Analyse button ────────────────────────────────────────────────────────────
+function btnHtml(sym) {
+  const st = aState[sym] || { status: 'idle' };
+  switch (st.status) {
+    case 'dispatching':
+      return `<button class="btn-an s-working" disabled><span class="spin"></span>Dispatching…</button>`;
+    case 'polling':
+      return `<button class="btn-an s-working" disabled><span class="spin"></span>Running… ${st.elapsed ? st.elapsed + 's' : ''}</button>`;
+    case 'done':
+      return `<button class="btn-an s-done" onclick="openRow('${sym}');event.stopPropagation()">View report ↓</button>`;
+    case 'error':
+      return `<button class="btn-an s-error" title="${escAttr(st.error||'')}" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Retry ↺</button>`;
+    default:
+      return `<button class="btn-an s-idle" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Analyse</button>`;
+  }
+}
+
+function escAttr(s) {
+  return s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+// ── Expand panel ──────────────────────────────────────────────────────────────
+function panelHtml(sym) {
+  const st = aState[sym];
+  if (!st || st.status === 'idle') {
+    return `<div class="rp-empty">Click <strong>Analyse</strong> to run a deep three-prompt Gemini analysis for <strong>${sym}</strong>.</div>`;
+  }
+  if (st.status === 'dispatching' || st.status === 'polling') {
+    return `<div class="rp-loading"><span class="spin" style="width:14px;height:14px;border-width:2px"></span>
+      Workflow dispatched for ${sym} — checking for results every 10 s…</div>`;
+  }
+  if (st.status === 'error') {
+    return `<div class="rp-empty" style="color:#A32D2D">${st.error || 'Analysis failed.'}</div>`;
+  }
+  if (st.status === 'done' && st.report) {
+    return reportHtml(st.report);
+  }
+  return '';
+}
+
+function reportHtml(r) {
+  const wf  = r.why_fell             || {};
+  const mq  = r.management_quality   || {};
+  const ic  = r.investment_case      || {};
+  const bd  = ic.score_breakdown     || {};
+
+  const score  = ic.score ?? '—';
+  const sc     = typeof ic.score === 'number' ? scoreClass(ic.score) : 'none';
+  const scColor = { buy:'#3B6D11', watch:'#854F0B', avoid:'#A32D2D', none:'#bbb' }[sc];
+  const acCls  = actionClass(ic.action);
+
+  const sbItems = [
+    ['P/E fair',     bd.pe_ok],
+    ['ROE &gt;15%',  bd.roe_ok],
+    ['Low debt',     bd.debt_ok],
+    ['Catalyst',     bd.catalyst_ok],
+    ['Macro-driven', bd.macro_driven],
+  ].map(([lbl, ok]) =>
+    `<span class="sb ${ok ? 'sb-y' : 'sb-n'}">${ok ? '✓' : '✗'} ${lbl}</span>`
+  ).join('');
+
+  const li = arr => (arr || []).filter(Boolean).map(x => `<li>${x}</li>`).join('') || '<li>—</li>';
+
+  const pledgeColor = { low:'#3B6D11', medium:'#854F0B', high:'#A32D2D' };
+  const pr          = (mq.pledge_risk || '').toLowerCase();
+  const prColor     = pledgeColor[pr] || '#888';
+
+  const catItems = (ic.catalysts || []).filter(x => x && x !== 'NONE');
+
+  return `
+  <div class="rp-meta">
+    Deep analysis · ${r.analysed_at || ''} · ${r.model || ''}
+  </div>
+  <div class="rp-grid">
+
+    <!-- Investment case -->
+    <div class="rp-card">
+      <div class="rp-card-title">Investment case</div>
+      <div class="rp-big" style="color:${scColor}">${score}<span class="rp-sub"> /10</span></div>
+      <span class="rp-action ${acCls}">${ic.action || '—'}</span>
+      <div class="rp-text">${ic.thesis || '—'}</div>
+      <div class="rp-label">Score breakdown</div>
+      <div class="sb-row">${sbItems}</div>
+      ${ic.thesis_break ? `<div class="exit-box">⚠ Exit if: ${ic.thesis_break}</div>` : ''}
+      ${ic.time_horizon ? `<div style="font-size:11px;color:#aaa;margin-top:8px">Horizon: ${ic.time_horizon}</div>` : ''}
+    </div>
+
+    <!-- Why it fell -->
+    <div class="rp-card">
+      <div class="rp-card-title">Why it fell</div>
+      <div class="rp-text" style="font-weight:600;margin-bottom:6px">${wf.primary_reason || '—'}</div>
+      <div class="rp-text">${wf.detailed_analysis || ''}</div>
+      ${wf.fall_category ? `
+        <div style="margin-top:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <span style="font-size:11px;padding:2px 8px;border-radius:99px;background:#f1f0ec;color:#5F5E5A">${wf.fall_category}</span>
+          <span style="font-size:11px;font-weight:600;color:${wf.is_temporary === false ? '#A32D2D' : '#1D9E75'}">
+            ${wf.is_temporary === false ? 'Structural risk' : 'Likely temporary'}
+          </span>
+        </div>` : ''}
+      <div class="rp-label">Evidence</div>
+      <ul class="rp-list">${li(wf.evidence)}</ul>
+      ${(wf.structural_concerns || []).length ? `
+        <div class="rp-label" style="color:#A32D2D">Structural concerns</div>
+        <ul class="rp-list">${li(wf.structural_concerns)}</ul>` : ''}
+    </div>
+
+    <!-- Management quality -->
+    <div class="rp-card">
+      <div class="rp-card-title">Management quality</div>
+      <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:8px">
+        <span class="rp-big" style="font-size:24px">${mq.score ?? '—'}<span class="rp-sub"> /10</span></span>
+        ${pr ? `<span style="font-size:11px;font-weight:600;color:${prColor};margin-left:4px">pledge: ${pr}</span>` : ''}
+      </div>
+      <div class="rp-text">${mq.assessment || '—'}</div>
+      ${mq.capital_allocation ? `<div class="rp-text" style="margin-top:6px;font-style:italic;color:#888">${mq.capital_allocation}</div>` : ''}
+      ${(mq.red_flags || []).length ? `<div class="rp-label" style="color:#A32D2D">Red flags</div><ul class="rp-list">${li(mq.red_flags)}</ul>` : ''}
+      ${(mq.positives || []).length ? `<div class="rp-label" style="color:#3B6D11">Positives</div><ul class="rp-list">${li(mq.positives)}</ul>` : ''}
+    </div>
+
+    <!-- Catalysts & risks -->
+    <div class="rp-card">
+      <div class="rp-card-title">Catalysts &amp; risks</div>
+      <div class="rp-label" style="color:#3B6D11">Catalysts</div>
+      <ul class="rp-list">${catItems.length ? li(catItems) : '<li>None identified</li>'}</ul>
+      <div class="rp-label" style="color:#A32D2D">Risks</div>
+      <ul class="rp-list">${li(ic.risks)}</ul>
+      ${ic.entry_strategy ? `<div class="rp-label">Entry strategy</div><div class="rp-text">${ic.entry_strategy}</div>` : ''}
+    </div>
+
+  </div>`;
+}
+
+// ── Row toggle ────────────────────────────────────────────────────────────────
+function toggleRow(sym, e) {
+  // Let button clicks pass through without toggling the row
+  if (e && e.target.closest('button')) return;
+  const dr = document.getElementById('dr-' + sym);
+  const xr = document.getElementById('xr-' + sym);
+  if (!dr || !xr) return;
+  const opening = !xr.classList.contains('open');
+  xr.classList.toggle('open', opening);
+  dr.classList.toggle('open', opening);
+}
+
+function openRow(sym) {
+  const xr = document.getElementById('xr-' + sym);
+  const dr = document.getElementById('dr-' + sym);
+  if (xr && !xr.classList.contains('open')) {
+    xr.classList.add('open');
+    dr && dr.classList.add('open');
+  }
+}
+
+// ── State helpers ─────────────────────────────────────────────────────────────
+function setState(sym, status, extra = {}) {
+  const prev = aState[sym] || {};
+  if (prev.timerId && status !== 'polling') clearInterval(prev.timerId);
+  aState[sym] = { ...prev, status, ...extra };
+  // Re-render just the button and panel for this symbol (avoids full table re-render)
+  const btnEl   = document.getElementById('btn-' + sym);
+  const panelEl = document.getElementById('panel-' + sym);
+  if (btnEl)   btnEl.innerHTML   = btnHtml(sym);
+  if (panelEl) panelEl.innerHTML = panelHtml(sym);
+}
+
+// ── GitHub Actions dispatch ───────────────────────────────────────────────────
+const POLL_MS      = 10_000;   // 10 seconds
+const POLL_TIMEOUT = 36;       // 36 × 10s = 6 minutes max
+
+async function triggerAnalysis(sym) {
+  if (GITHUB_PAT === 'YOUR_PERSONAL_ACCESS_TOKEN') {
+    alert(
+      'Fill in GITHUB_OWNER, GITHUB_REPO, and GITHUB_PAT\n' +
+      'at the top of this file before using the Analyse feature.'
+    );
+    return;
+  }
+
+  setState(sym, 'dispatching');
+
+  try {
+    const res = await fetch(
+      `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}` +
+      `/actions/workflows/${WORKFLOW_FILE}/dispatches`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization':        `Bearer ${GITHUB_PAT}`,
+          'Accept':               'application/vnd.github+json',
+          'Content-Type':         'application/json',
+          'X-GitHub-Api-Version': '2022-11-28',
+        },
+        body: JSON.stringify({ ref: GH_REF, inputs: { symbol: sym } }),
+      }
+    );
+
+    // 204 No Content = accepted
+    if (res.status === 204) {
+      setState(sym, 'polling', { elapsed: 0 });
+      startPolling(sym);
+    } else {
+      const body = await res.text().catch(() => '');
+      setState(sym, 'error', {
+        error: `Dispatch failed (HTTP ${res.status})${body ? ': ' + body.slice(0, 160) : ''}`,
+      });
+    }
+  } catch (err) {
+    setState(sym, 'error', { error: `Network error: ${err.message}` });
+  }
+}
+
+function startPolling(sym) {
+  let attempts  = 0;
+  const t0      = Date.now();
+
+  const timerId = setInterval(async () => {
+    attempts++;
+    const elapsed = Math.round((Date.now() - t0) / 1000);
+
+    if (attempts > POLL_TIMEOUT) {
+      clearInterval(timerId);
+      setState(sym, 'error', {
+        error: `Timed out after ${Math.round(POLL_TIMEOUT * POLL_MS / 60000)} min. ` +
+               `The workflow may still be running — refresh the page to re-check.`,
+      });
+      return;
+    }
+
+    // Update elapsed counter in button without touching the panel
+    if (aState[sym]) aState[sym].elapsed = elapsed;
+    const btnEl = document.getElementById('btn-' + sym);
+    if (btnEl) btnEl.innerHTML = btnHtml(sym);
+
+    try {
+      const res = await fetch(`../analysis/${sym}.json?t=${Date.now()}`);
+      if (res.ok) {
+        clearInterval(timerId);
+        const report = await res.json();
+        setState(sym, 'done', { report });
+        openRow(sym);   // auto-expand to show the result
+      }
+      // 404 = still running; keep polling
+    } catch (_) {
+      // transient network error; keep polling
+    }
+  }, POLL_MS);
+
+  if (aState[sym]) aState[sym].timerId = timerId;
+}
+
+// ── Load data.json ────────────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch('../data.json?t=' + Date.now());
+    if (!res.ok) throw new Error(`HTTP ${res.status} — data.json not found`);
+    const data = await res.json();
+
+    // Market context (present in Gemini-analyzed runs)
+    if (data.market_context) {
+      const bar = document.getElementById('ctx-bar');
+      bar.style.display = 'block';
+      document.getElementById('ctx-text').textContent = data.market_context;
+    }
+
+    document.getElementById('last-run').textContent =
+      'Updated: ' + (data.generated_at || data.date || '—');
+
+    allStocks = (data.stocks || []).map(s => ({
+      ...s,
+      _score: parseFloat(s.score),   // pre-parsed for sort/filter; NaN if absent
+    }));
+
+    renderTable(filtered());
+  } catch (err) {
+    document.getElementById('main-content').innerHTML = `
+      <div class="state">
+        <div class="state-icon">◎</div>
+        <div>Could not load <code>../data.json</code></div>
+        <div style="margin-top:8px;font-size:12px;color:#bbb">
+          Run the screener first, then refresh.<br>
+          <code>${err.message}</code>
+        </div>
+      </div>`;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>

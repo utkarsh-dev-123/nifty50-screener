@@ -1,0 +1,41 @@
+name: Analyse Stock
+
+on:
+  workflow_dispatch:
+    inputs:
+      symbol:
+        description: "NSE ticker symbol, e.g. RELIANCE"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+
+      # Pass symbol via env to avoid shell-injection from user input.
+      - name: Run deep analysis
+        run: python analyse_stock.py "$SYMBOL"
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          SYMBOL: ${{ inputs.symbol }}
+
+      - name: Commit analysis result
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add analysis/
+          git commit -m "analysis: ${{ inputs.symbol }}" || echo "Nothing to commit"
+          git push origin main
