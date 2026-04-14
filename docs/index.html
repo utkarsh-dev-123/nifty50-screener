@@ -107,7 +107,7 @@ table {
 }
 
 /* Sticky header sits below the page header (57px) */
-thead { position: sticky; top: 57px; z-index: 20; }
+thead { position: sticky; top: 0; z-index: 20; }   /* top overridden dynamically by updateStickyOffset() */
 
 th {
   background: #faf9f7;
@@ -137,7 +137,7 @@ td {
 tr.data-row:last-of-type td { border-bottom: none; }
 
 /* Row hover / open state */
-tr.data-row { cursor: pointer; }
+tr.data-row { cursor: pointer; position: relative; z-index: 1; }
 tr.data-row:hover > td { background: #faf9f7; }
 tr.data-row.open > td {
   background: #f3f2ee;
@@ -932,7 +932,15 @@ async function loadData() {
   }
 }
 
-loadData();
+function updateStickyOffset() {
+  const h = document.querySelector('.header').offsetHeight;
+  const thead = document.querySelector('thead');
+  if (thead) thead.style.top = h + 'px';
+}
+
+window.addEventListener('resize', updateStickyOffset);
+
+loadData().then(updateStickyOffset);
 </script>
 </body>
 </html>
