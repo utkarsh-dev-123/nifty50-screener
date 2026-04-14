@@ -27,6 +27,13 @@ MAX_1Y_DROP          = -70.0  # worse than -70% in 1Y = structural, reject
 # Stage 2 — listing age
 MIN_LISTING_AGE_DAYS = 365    # reject stocks listed < 1 year ago
 
+# Stage 4.5 — Profitability filter
+# Benefit of doubt if data missing (None = pass through)
+MIN_NET_MARGIN  = 0.0  # reject if net margin < 0% (loss-making)
+MIN_OP_CASHFLOW = 0    # reject if operating cash flow < 0 (burning cash)
+# Combined reject: revenue shrinking AND margins negative simultaneously
+# Either alone could be temporary; both together = deteriorating business
+
 # Stage 5 — persistent decline filter (small + mid cap)
 SMALL_CAP_CR           = 50000 # market cap threshold in Crores (covers small + mid cap)
 SMALL_CAP_YOY_DECLINE  = -0.15 # legacy constant, kept for reference

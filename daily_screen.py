@@ -303,12 +303,64 @@ def fetch_candidates(test=False):
 
     print(f"  {len(stage4)} stocks passed drawdown filter\n")
 
+    # ── STAGE 4.5 — Profitability filter (uses cached .info) ─────────────────
+    print("Stage 4.5: Applying profitability filter...")
+    profit_failed = 0
+    stage4b       = []
+
+    for s in stage4:
+        sym  = s["symbol"]
+        info = s["_yf_info"]
+
+        net_margin = safe_float(info.get("profitMargins"))
+        op_cf      = safe_float(info.get("operatingCashflow"))
+        rev_growth = safe_float(info.get("revenueGrowth"))
+        sector     = s.get("sector", "")
+
+        # Skip profitability checks for financial sector —
+        # banks and NBFCs report differently (NIM, not margins)
+        is_financial = sector in (
+            "Financial Services", "Banking", "Insurance",
+            "Asset Management", "Capital Markets"
+        )
+
+        if not is_financial:
+
+            # Reject 1: loss-making on net basis
+            # Benefit of doubt if data missing (None passes through)
+            if net_margin is not None and net_margin < config.MIN_NET_MARGIN:
+                profit_failed += 1
+                print(f"  x {sym:20s}  negative net margin "
+                      f"({net_margin*100:.1f}%)")
+                continue
+
+            # Reject 2: burning cash operationally
+            if op_cf is not None and op_cf < config.MIN_OP_CASHFLOW:
+                profit_failed += 1
+                print(f"  x {sym:20s}  negative operating cash flow")
+                continue
+
+            # Reject 3: BOTH revenue shrinking AND margins negative
+            # Either alone could be a one-off; both together =
+            # structural deterioration
+            if (rev_growth is not None and rev_growth < 0 and
+                    net_margin is not None and net_margin < 0):
+                profit_failed += 1
+                print(f"  x {sym:20s}  revenue declining + margins "
+                      f"negative (rev={rev_growth*100:.1f}%, "
+                      f"margin={net_margin*100:.1f}%)")
+                continue
+
+        stage4b.append(s)
+
+    print(f"  {len(stage4b)} stocks passed profitability filter\n")
+
     # ── STAGE 5 — Small cap structural decline (uses Stage 3 prices) ─────────
     print("Stage 5: Checking small cap structural decline...")
     smallcap_failed = 0
     stage5          = []
 
-    for s in stage4:
+    for s in stage4b:
         sym           = s["symbol"]
         market_cap_cr = s.get("market_cap_cr")
         current_price = s["current_price"]
@@ -402,6 +454,7 @@ def fetch_candidates(test=False):
     print(f"  Stage 3  No momentum trigger:     {momentum_failed}")
     print(f"  Stage 3  Freefall rejected:       {freefall_failed}")
     print(f"  Stage 4  Drawdown out of range:   {drawdown_failed}")
+    print(f"  Stage 4.5 Profitability failed:  {profit_failed}")
     print(f"  Stage 5  Mid/small persistent decline: {smallcap_failed}")
     print(f"  Stage 6  Graham failed:           {graham_failed}")
     print(f"  Stage 6  Graham passed:           {graham_passed}")

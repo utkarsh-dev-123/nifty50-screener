@@ -41,6 +41,14 @@ Stage 4 — yFinance .info (fundamentals)
         │  Stores market_cap_cr, sector, high/low_52w; caches info dict
         │
         ▼
+Stage 4.5 — Profitability filter (uses cached .info, no extra calls)
+        │  Skip for financial sector (banks/NBFCs report differently)
+        │  Reject if net margin < 0% (loss-making)
+        │  Reject if operating cash flow < 0 (burning cash)
+        │  Reject if BOTH revenue growth < 0 AND net margin < 0
+        │  Benefit of doubt if any field is missing (None = pass)
+        │
+        ▼
 Stage 5 — Persistent decline filter (no extra API calls)
         │  Only for market_cap_cr < SMALL_CAP_CR (50,000 Cr — small + mid cap)
         │  Reject if 1Y < 0% AND 2Y < 5% AND 3Y < 10% (all windows below threshold)
