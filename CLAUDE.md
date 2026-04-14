@@ -17,29 +17,47 @@ Runs every weekday via `.github/workflows/daily_screen.yml`.
 No API key required.
 
 ```
-NSE live constituent list
+Stage 0 — NseIndiaApi listEquityStocksByIndex("NIFTY 500")
+        │  Returns symbol, pChange, lastPrice, yearHigh/Low, name
         │
         ▼
-  yfinance 3-month price history
-        │
-        ├─ Dual lookback filter   (1M < 0, 3M < 0, 3M > −DROP_MAX%)
-        │
-        ├─ 52W drawdown filter    (DROP_MIN%–DROP_MAX% below 52W high)
-        │
-        ├─ Graham balance-sheet screens (config.py thresholds)
-        │     Screen 6: debtToEquity < 100  (yFinance % scale; 100 = 1.0×)
-        │     Screen 7: currentRatio > 2.0
-        │     Screen 8: totalDebt < 2 × (currentAssets − totalLiabilities)
+Stage 1 — Drop stocks with missing price/pChange (no extra API calls)
+        │  Flag triggered_1d = pChange ≤ MIN_1D_DROP (−5%)
         │
         ▼
-  Graham survivors
+Stage 2 — Age filter via NseIndiaApi equityMetaInfo
+        │  Reject stocks listed < MIN_LISTING_AGE_DAYS (365 days)
+        │  Benefit of doubt if API fails; 0.4s sleep between calls
         │
-        ├─ fetch_fundamentals()   — yfinance .info (reuses cached dict)
-        │
-        ├─ fetch_nse_context()    — announcements (last 3) + promoter pledge %
-        │                          no PDFs downloaded
         ▼
-  save_results() → data.json
+Stage 3 — yFinance 2-year monthly history
+        │  OR trigger: keep if pChange ≤ −5% OR 1M ≤ −10% OR 3M ≤ −10%
+        │  Hard reject: 3M < −50% or 1Y < −70% (freefall, not contrarian)
+        │  Stores change_1m/3m/1y, price_1y/2y_ago, volume_ratio, panic_selling
+        │
+        ▼
+Stage 4 — yFinance .info (fundamentals)
+        │  52W drawdown filter: DROP_MIN (25%) – DROP_MAX (65%) below 52W high
+        │  Stores market_cap_cr, sector, high/low_52w; caches info dict
+        │
+        ▼
+Stage 5 — Small cap structural decline check (no extra API calls)
+        │  Only for market_cap_cr < SMALL_CAP_CR (5000 Cr)
+        │  Reject if yr1 < −15% AND yr2 < −15% (two consecutive years of decline)
+        │  Uses price_1y_ago / price_2y_ago from Stage 3
+        │
+        ▼
+Stage 6 — Graham balance-sheet screens (uses cached .info)
+        │  Screen 6: debtToEquity < 100  (yFinance % scale; 100 ≡ 1.0×)
+        │  Screen 7: currentRatio > 2.0  (skipped for financial-sector stocks)
+        │  Screen 8: totalDebt < 2 × (currentAssets − totalLiabilities)
+        │
+        ▼
+Stage 7 — NseIndiaApi: announcements (last 3, 90-day window) + promoter pledge %
+        │
+        ▼
+Stage 8 — build_output() strips internal fields; save_results() → data.json
+          No TOP_N cap — all survivors are written. Sorted by change_1m ascending.
 ```
 
 ### `analyse_stock.py` — deep single-stock analysis (Gemini, PDFs)
@@ -87,8 +105,8 @@ Each Gemini prompt tries Google Search grounding first, falls back to a plain ca
 |------|---------|
 | `daily_screen.py` | Daily pipeline: filter → fundamentals → NSE context → `data.json`. |
 | `analyse_stock.py` | On-demand deep analysis: NSE data → 3× Gemini → `analysis/<SYMBOL>.json`. |
-| `helpers.py` | Shared utilities: `safe_float`, `clean_nan`, `get_sector_type`, `get_nifty500_tickers`, `passes_graham_screens`, `_find_pledge`, `fetch_fundamentals`. |
-| `config.py` | Numeric thresholds (`DROP_MIN`, `DROP_MAX`, Graham limits, `TOP_N`). Edit here to tune without touching logic. |
+| `helpers.py` | Shared utilities: `safe_float`, `clean_nan`, `get_sector_type`, `get_nifty500_stocks`, `get_nifty500_tickers` (fallback), `passes_graham_screens` (sector-aware), `_find_pledge`, `fetch_fundamentals`. |
+| `config.py` | All numeric thresholds — drawdown, Graham, momentum triggers, age/small-cap guards. Edit here to tune without touching logic. |
 | `main.py` | **Deprecated.** Thin shim that calls `daily_screen.main()` for backward compatibility. |
 | `data.json` | Daily screener output consumed by `docs/index.html`. Overwritten on every run. |
 | `analysis/` | Per-stock deep analysis JSONs written by `analyse_stock.py`. |
@@ -109,7 +127,10 @@ the threshold.
 - **Screen 6 (D/E)**: yfinance `debtToEquity` is in percentage form — a value of
   `50` means 0.5× D/E. The threshold is `< 100` (≡ D/E < 1.0×).
 - **Screen 7 (current ratio)**: direct ratio from yfinance `currentRatio`. Must be
-  `> 2.0`.
+  `> 2.0`. **Skipped (set to `None`) for financial-sector stocks** — current ratio
+  is not a meaningful metric for banks, NBFCs, insurers, and asset managers.
+  Sector is detected via yfinance `info["sector"]`; see `FINANCIAL_SECTORS` in
+  `helpers.py`.
 - **Screen 8 (debt cover)**: `totalDebt < 2 × (currentAssets − totalLiabilities)`.
   Uses `currentAssets` as primary key, falls back to `totalCurrentAssets`.
   `totalLiabilities` tries `totalLiab` as fallback.
@@ -128,7 +149,15 @@ stored on each surviving candidate and written to `data.json`.
 | `GRAHAM_MAX_DE` | `100` | Max `debtToEquity` (yFinance % scale; 100 ≡ 1.0×) |
 | `GRAHAM_MIN_CR` | `2.0` | Min `currentRatio` |
 | `GRAHAM_NCAV_MULT` | `2.0` | Debt-cover multiplier for Screen 8 |
-| `TOP_N` | `30` | Candidates passed through to output |
+| `TOP_N` | `30` | Legacy constant; no longer used as a cap — all survivors are output |
+| `MIN_1D_DROP` | `-5.0` | Stage 1: pChange threshold to trigger 1-day momentum flag |
+| `MIN_1M_DROP` | `-10.0` | Stage 3: 1-month return threshold for OR trigger |
+| `MIN_3M_DROP` | `-10.0` | Stage 3: 3-month return threshold for OR trigger |
+| `MAX_3M_DROP` | `-50.0` | Stage 3: worse than −50% in 3M = freefall, reject |
+| `MAX_1Y_DROP` | `-70.0` | Stage 3: worse than −70% in 1Y = structural decline, reject |
+| `MIN_LISTING_AGE_DAYS` | `365` | Stage 2: stocks listed less than this many days ago are rejected |
+| `SMALL_CAP_CR` | `5000` | Stage 5: market cap (Cr) below which structural decline check applies |
+| `SMALL_CAP_YOY_DECLINE` | `-0.15` | Stage 5: two consecutive years below this return = structural, reject |
 
 ---
 
@@ -165,5 +194,6 @@ python daily_screen.py --test
 python main.py --test          # delegates to daily_screen.main()
 ```
 
-Limits the scan to the **first 5 tickers** returned by NSE. Useful for smoke-testing
-after dependency upgrades or verifying the pipeline without waiting 30+ minutes.
+Limits the scan to the **first 10 stocks** returned by NSE Stage 0. Useful for
+smoke-testing after dependency upgrades or verifying the pipeline without waiting
+30+ minutes.

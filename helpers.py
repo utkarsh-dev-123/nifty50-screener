@@ -71,17 +71,46 @@ def get_sector_type(ticker):
 
 # ── Live Nifty 500 constituent fetch ─────────────────────────────────────────
 
-def get_nifty500_tickers():
-    """Fetch live Nifty 500 constituents from NSE India and return in Yahoo Finance .NS format."""
+def get_nifty500_stocks():
+    """
+    Fetch live Nifty 500 constituents from NSE India.
+    Returns a list of dicts with symbol, ticker, price data, and metadata.
+    """
     print("Fetching Nifty 500 constituents from NSE India...")
     with NSE(download_folder=Path("."), server=False) as nse:
         data = nse.listEquityStocksByIndex("NIFTY 500")
-    tickers = [item["symbol"] + ".NS" for item in data["data"]]
-    print(f"  Fetched {len(tickers)} constituents.\n")
-    return tickers
+
+    stocks = []
+    for item in data["data"]:
+        sym = item.get("symbol", "")
+        if not sym:
+            continue
+        stocks.append({
+            "symbol":    sym,
+            "ticker":    sym + ".NS",
+            "pChange":   safe_float(item.get("pChange")),
+            "lastPrice": safe_float(item.get("lastPrice")),
+            "yearHigh":  safe_float(item.get("yearHigh")),
+            "yearLow":   safe_float(item.get("yearLow")),
+            "name":      item.get("meta", {}).get("companyName", sym),
+        })
+    print(f"  Fetched {len(stocks)} Nifty 500 stocks from NSE")
+    return stocks
+
+
+def get_nifty500_tickers():
+    """Fallback: return ticker strings (Yahoo Finance .NS format) from get_nifty500_stocks()."""
+    stocks = get_nifty500_stocks()
+    return [s["ticker"] for s in stocks]
 
 
 # ── Graham balance-sheet screens ─────────────────────────────────────────────
+
+FINANCIAL_SECTORS = {
+    "Financial Services", "Banking", "Insurance",
+    "Asset Management", "Capital Markets",
+}
+
 
 def passes_graham_screens(ticker, info):
     """
@@ -89,10 +118,12 @@ def passes_graham_screens(ticker, info):
     Missing data → None (benefit of the doubt; treated as passing).
 
     Screen 6: debtToEquity < 100  (yFinance reports D/E as %, 100 ≡ 1.0×)
-    Screen 7: currentRatio > 2.0
+    Screen 7: currentRatio > 2.0  (skipped for financial-sector stocks)
     Screen 8: totalDebt < 2 × (currentAssets − totalLiabilities)
     """
     failures = []
+    sector     = info.get("sector", "")
+    is_financial = sector in FINANCIAL_SECTORS
 
     # Screen 6 — debt-to-equity
     de = safe_float(info.get("debtToEquity"))
@@ -103,14 +134,17 @@ def passes_graham_screens(ticker, info):
     else:
         s6 = None
 
-    # Screen 7 — current ratio
-    cr = safe_float(info.get("currentRatio"))
-    if cr is not None:
-        s7 = cr > 2.0
-        if not s7:
-            failures.append(f"current ratio {cr:.2f} ≤ 2.0")
+    # Screen 7 — current ratio (not applicable to financial sector)
+    if is_financial:
+        s7 = None  # benefit of doubt — metric not meaningful for financials
     else:
-        s7 = None
+        cr = safe_float(info.get("currentRatio"))
+        if cr is not None:
+            s7 = cr > 2.0
+            if not s7:
+                failures.append(f"current ratio {cr:.2f} ≤ 2.0")
+        else:
+            s7 = None
 
     # Screen 8 — total debt vs net current assets
     total_debt  = safe_float(info.get("totalDebt"))
