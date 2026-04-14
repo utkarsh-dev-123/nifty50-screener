@@ -172,7 +172,7 @@ def fetch_candidates(test=False):
         sym    = s["symbol"]
         ticker = s["ticker"]
         try:
-            hist = yf.download(ticker, period="2y", interval="1mo",
+            hist = yf.download(ticker, period="3y", interval="1mo",
                                progress=False, auto_adjust=True)
             if hist.empty:
                 continue
@@ -206,9 +206,10 @@ def fetch_candidates(test=False):
                 if prev and not math.isnan(prev):
                     change_1y = (current_price - prev) / prev * 100
 
-            # Store prices for Stage 5 small cap check
+            # Store prices for Stage 5 persistent decline check
             price_1y_ago = float(close.iloc[-13]) if len(close) >= 13 else None
             price_2y_ago = float(close.iloc[-25]) if len(close) >= 25 else None
+            price_3y_ago = float(close.iloc[-37]) if len(close) >= 37 else None
 
             # OR trigger: keep stock if ANY condition met
             pChange = s["pChange"]
@@ -243,6 +244,7 @@ def fetch_candidates(test=False):
                 "change_1y":     round(change_1y, 2) if change_1y is not None else None,
                 "price_1y_ago":  price_1y_ago,
                 "price_2y_ago":  price_2y_ago,
+                "price_3y_ago":  price_3y_ago,
                 "volume_ratio":  volume_ratio,
                 "panic_selling": panic_selling,
                 "triggered_1m":  change_1m is not None and change_1m <= config.MIN_1M_DROP,
@@ -312,16 +314,47 @@ def fetch_candidates(test=False):
         current_price = s["current_price"]
         price_1y_ago  = s.get("price_1y_ago")
         price_2y_ago  = s.get("price_2y_ago")
+        price_3y_ago  = s.get("price_3y_ago")
 
+        # Only apply to stocks below SMALL_CAP_CR threshold (50,000 Cr)
+        # Large caps (Reliance, HDFC etc.) are exempt
         if market_cap_cr is not None and market_cap_cr < config.SMALL_CAP_CR:
-            if price_1y_ago is not None and price_2y_ago is not None:
-                yr1 = (current_price - price_1y_ago) / price_1y_ago
-                yr2 = (price_1y_ago  - price_2y_ago) / price_2y_ago
-                if yr1 < config.SMALL_CAP_YOY_DECLINE and yr2 < config.SMALL_CAP_YOY_DECLINE:
-                    smallcap_failed += 1
-                    print(f"  x {sym:20s}  small cap structural decline "
-                          f"(yr1={yr1*100:.0f}%, yr2={yr2*100:.0f}%)")
-                    continue
+
+            # Need at least 2Y of data to apply this check
+            if price_1y_ago and price_2y_ago and current_price:
+
+                ret_1y = (current_price - price_1y_ago) / price_1y_ago
+                ret_2y = (current_price - price_2y_ago) / price_2y_ago
+
+                # If 3Y data available, use all three
+                if price_3y_ago:
+                    ret_3y = (current_price - price_3y_ago) / price_3y_ago
+
+                    # Reject: negative returns across ALL three windows
+                    # = consistent multi-year underperformer
+                    if (ret_1y < config.SMALLMID_3Y_RETURN_MIN and
+                            ret_2y < config.SMALLMID_3Y_RETURN_MIN and
+                            ret_3y < config.SMALLMID_3Y_RETURN_MIN):
+                        smallcap_failed += 1
+                        print(f"  x {sym:20s}  "
+                              f"persistent decline "
+                              f"(1Y={ret_1y*100:.0f}% "
+                              f"2Y={ret_2y*100:.0f}% "
+                              f"3Y={ret_3y*100:.0f}%)")
+                        continue
+
+                else:
+                    # Fallback: only 2Y data available
+                    # Reject if both 1Y and 2Y are negative
+                    if (ret_1y < config.SMALLMID_3Y_RETURN_MIN and
+                            ret_2y < config.SMALLMID_3Y_RETURN_MIN):
+                        smallcap_failed += 1
+                        print(f"  x {sym:20s}  "
+                              f"persistent decline "
+                              f"(1Y={ret_1y*100:.0f}% "
+                              f"2Y={ret_2y*100:.0f}% "
+                              f"3Y=N/A)")
+                        continue
 
         s["is_small_cap"] = (market_cap_cr is not None and
                              market_cap_cr < config.SMALL_CAP_CR)
@@ -369,7 +402,7 @@ def fetch_candidates(test=False):
     print(f"  Stage 3  No momentum trigger:     {momentum_failed}")
     print(f"  Stage 3  Freefall rejected:       {freefall_failed}")
     print(f"  Stage 4  Drawdown out of range:   {drawdown_failed}")
-    print(f"  Stage 5  Small cap structural:    {smallcap_failed}")
+    print(f"  Stage 5  Mid/small persistent decline: {smallcap_failed}")
     print(f"  Stage 6  Graham failed:           {graham_failed}")
     print(f"  Stage 6  Graham passed:           {graham_passed}")
     print(f"  FINAL    Candidates:              {len(candidates)}")

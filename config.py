@@ -27,6 +27,7 @@ MAX_1Y_DROP          = -70.0  # worse than -70% in 1Y = structural, reject
 # Stage 2 — listing age
 MIN_LISTING_AGE_DAYS = 365    # reject stocks listed < 1 year ago
 
-# Stage 5 — small cap structural decline
-SMALL_CAP_CR          = 5000  # market cap threshold in Crores
-SMALL_CAP_YOY_DECLINE = -0.15 # reject if down 15%+ two years running
+# Stage 5 — persistent decline filter (small + mid cap)
+SMALL_CAP_CR           = 50000 # market cap threshold in Crores (covers small + mid cap)
+SMALL_CAP_YOY_DECLINE  = -0.15 # legacy constant, kept for reference
+SMALLMID_3Y_RETURN_MIN = 0.0   # reject if 3Y cumulative return < 0% (never recovered)

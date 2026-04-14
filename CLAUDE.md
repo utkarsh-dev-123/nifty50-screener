@@ -41,10 +41,12 @@ Stage 4 — yFinance .info (fundamentals)
         │  Stores market_cap_cr, sector, high/low_52w; caches info dict
         │
         ▼
-Stage 5 — Small cap structural decline check (no extra API calls)
-        │  Only for market_cap_cr < SMALL_CAP_CR (5000 Cr)
-        │  Reject if yr1 < −15% AND yr2 < −15% (two consecutive years of decline)
-        │  Uses price_1y_ago / price_2y_ago from Stage 3
+Stage 5 — Persistent decline filter (no extra API calls)
+        │  Only for market_cap_cr < SMALL_CAP_CR (50,000 Cr — small + mid cap)
+        │  Reject if 1Y, 2Y AND 3Y cumulative returns are all negative
+        │  = stock has never recovered over any multi-year window
+        │  Falls back to 1Y+2Y check when 3Y data unavailable
+        │  Uses price_1y/2y/3y_ago from Stage 3 monthly data
         │
         ▼
 Stage 6 — Graham balance-sheet screens (uses cached .info)
@@ -156,8 +158,9 @@ stored on each surviving candidate and written to `data.json`.
 | `MAX_3M_DROP` | `-50.0` | Stage 3: worse than −50% in 3M = freefall, reject |
 | `MAX_1Y_DROP` | `-70.0` | Stage 3: worse than −70% in 1Y = structural decline, reject |
 | `MIN_LISTING_AGE_DAYS` | `365` | Stage 2: stocks listed less than this many days ago are rejected |
-| `SMALL_CAP_CR` | `5000` | Stage 5: market cap (Cr) below which structural decline check applies |
-| `SMALL_CAP_YOY_DECLINE` | `-0.15` | Stage 5: two consecutive years below this return = structural, reject |
+| `SMALL_CAP_CR` | `50000` | Stage 5: market cap (Cr) below which persistent decline check applies (small + mid cap) |
+| `SMALL_CAP_YOY_DECLINE` | `-0.15` | Legacy constant, kept for reference |
+| `SMALLMID_3Y_RETURN_MIN` | `0.0` | Stage 5: reject if 1Y, 2Y, and 3Y cumulative returns are all below this threshold |
 
 ---
 
