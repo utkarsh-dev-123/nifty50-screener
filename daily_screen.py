@@ -131,38 +131,81 @@ def fetch_candidates(test=False):
     stage2    = []
     today     = datetime.date.today()
 
+    CACHE_FILE = Path("listing_cache.json")
+
+    # Load existing cache
+    listing_cache = {}
+    if CACHE_FILE.exists():
+        try:
+            with open(CACHE_FILE) as f:
+                listing_cache = json.load(f)
+        except Exception:
+            listing_cache = {}
+
+    cache_hits  = 0
+    cache_saves = 0
+
     with NSE(download_folder=Path("."), server=False) as nse:
         for s in stage1:
             sym    = s["symbol"]
             passed = True
-            try:
-                meta = nse.equityMetaInfo(sym)
-                listing_str = (meta.get("listingDate") or
-                               meta.get("listing_date") or
-                               meta.get("listingdate") or "")
-                listing_date = None
-                for fmt in ("%d-%b-%Y", "%Y-%m-%d", "%d/%m/%Y"):
+
+            if sym in listing_cache:
+                # Use cached value — no API call, no sleep
+                cache_hits += 1
+                cached_date_str = listing_cache[sym]
+                if cached_date_str != "UNKNOWN":
                     try:
-                        listing_date = datetime.datetime.strptime(
-                            listing_str[:11].strip(), fmt).date()
-                        break
+                        listing_date = datetime.date.fromisoformat(cached_date_str)
+                        age_days = (today - listing_date).days
+                        if age_days < config.MIN_LISTING_AGE_DAYS:
+                            age_failed += 1
+                            passed = False
                     except Exception:
-                        continue
+                        pass
+            else:
+                # Fresh API call
+                listing_date_str = "UNKNOWN"
+                try:
+                    meta = nse.equityMetaInfo(sym)
+                    listing_str = (meta.get("listingDate") or
+                                   meta.get("listing_date") or
+                                   meta.get("listingdate") or "")
+                    listing_date = None
+                    for fmt in ("%d-%b-%Y", "%Y-%m-%d", "%d/%m/%Y"):
+                        try:
+                            listing_date = datetime.datetime.strptime(
+                                listing_str[:11].strip(), fmt).date()
+                            break
+                        except Exception:
+                            continue
 
-                if listing_date is not None:
-                    age_days = (today - listing_date).days
-                    if age_days < config.MIN_LISTING_AGE_DAYS:
-                        age_failed += 1
-                        passed = False
-            except Exception:
-                pass  # benefit of doubt if API fails
+                    if listing_date is not None:
+                        listing_date_str = listing_date.isoformat()
+                        age_days = (today - listing_date).days
+                        if age_days < config.MIN_LISTING_AGE_DAYS:
+                            age_failed += 1
+                            passed = False
+                except Exception:
+                    pass  # benefit of doubt
 
-            time.sleep(0.4)   # always sleep — avoids rate-limiting for both pass and fail
+                listing_cache[sym] = listing_date_str
+                cache_saves += 1
+                time.sleep(0.4)
+
             if passed:
                 stage2.append(s)
 
+    # Save updated cache
+    try:
+        with open(CACHE_FILE, "w") as f:
+            json.dump(listing_cache, f, indent=2)
+    except Exception as e:
+        print(f"  Warning: could not save listing cache: {e}")
+
     print(f"  {len(stage2)} stocks passed age filter "
-          f"({age_failed} rejected as too new)\n")
+          f"({age_failed} rejected as too new) "
+          f"[cache: {cache_hits} hits, {cache_saves} new entries]\n")
 
     # ── STAGE 3 — Price history + OR momentum filter (yFinance) ──────────────
     print("Stage 3: Downloading price history and applying momentum OR filter...")
@@ -358,9 +401,26 @@ def fetch_candidates(test=False):
                       f"margin={net_margin*100:.1f}%)")
                 continue
 
+        # Track which profitability fields had data
+        profitability_checked = not is_financial
+        profitability_data = {
+            "net_margin_available":  net_margin is not None,
+            "op_cf_available":       op_cf is not None,
+            "rev_growth_available":  rev_growth is not None,
+        }
+        s["profitability_checked"] = profitability_checked
+        s["profitability_data"]    = profitability_data
+
         stage4b.append(s)
 
-    print(f"  {len(stage4b)} stocks passed profitability filter\n")
+    checked   = [s for s in stage4b if s.get("profitability_checked")]
+    no_margin = sum(1 for s in checked if not s.get("profitability_data", {}).get("net_margin_available"))
+    no_cf     = sum(1 for s in checked if not s.get("profitability_data", {}).get("op_cf_available"))
+    print(f"  {len(stage4b)} stocks passed profitability filter")
+    print(f"  Stage 4.5 Data gaps: "
+          f"{no_margin} missing net_margin, "
+          f"{no_cf} missing op_cashflow "
+          f"(these passed with benefit of doubt)\n")
 
     # ── STAGE 5 — Trajectory filter (uses Stage 3 prices) ───────────────────
     print("Stage 5: Checking trajectory and decline pattern...")
@@ -524,6 +584,9 @@ def build_output(s):
         "s6_debt_equity":      s.get("s6_debt_equity"),
         "s7_current_ratio":    s.get("s7_current_ratio"),
         "s8_debt_cover":       s.get("s8_debt_cover"),
+        "profitability_checked":   s.get("profitability_checked", False),
+        "net_margin_available":    s.get("profitability_data", {}).get("net_margin_available", False),
+        "op_cf_available":         s.get("profitability_data", {}).get("op_cf_available", False),
         "pe_ratio":            fundamentals.get("pe_ratio"),
         "pb_ratio":            fundamentals.get("pb_ratio"),
         "roe":                 fundamentals.get("roe"),
