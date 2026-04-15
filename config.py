@@ -30,7 +30,7 @@ MIN_LISTING_AGE_DAYS = 365    # reject stocks listed < 1 year ago
 # Stage 4.5 — Profitability filter
 # Benefit of doubt if data missing (None = pass through)
 MIN_NET_MARGIN  = 0.0  # reject if net margin < 0% (loss-making)
-MIN_OP_CASHFLOW = 0    # reject if operating cash flow < 0 (burning cash)
+MIN_OP_CASHFLOW = 0    # Crores — reject if OCF < 0 (burning cash)
 # Combined reject: revenue shrinking AND margins negative simultaneously
 # Either alone could be temporary; both together = deteriorating business
 

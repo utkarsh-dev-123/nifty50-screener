@@ -94,6 +94,42 @@ def fetch_nse_context(symbol, nse):
     return result
 
 
+# ── Operating cash flow helper ────────────────────────────────────────────────
+
+def get_operating_cashflow(ticker):
+    """
+    Fetch operating cash flow from the annual cashflow statement.
+    Returns value in Crores, or None if data unavailable.
+
+    Tries multiple field names because yFinance uses different keys
+    across versions.
+    """
+    try:
+        cf = yf.Ticker(ticker).cashflow
+        if cf is None or cf.empty:
+            return None
+
+        # Use most recent year (first column)
+        latest = cf.iloc[:, 0]
+
+        for field in [
+            "Operating Cash Flow",
+            "Cash Flow From Continuing Operating Activities",
+            "Total Cash From Operating Activities",
+            "operatingCashflow",
+        ]:
+            if field in latest.index:
+                val = latest[field]
+                if val is not None and not (
+                    isinstance(val, float) and math.isnan(val)
+                ):
+                    # Convert from absolute rupees to Crores
+                    return round(float(val) / 1e7, 1)
+        return None
+    except Exception:
+        return None
+
+
 # ── 8-stage pipeline ──────────────────────────────────────────────────────────
 
 def fetch_candidates(test=False):
@@ -359,7 +395,6 @@ def fetch_candidates(test=False):
         info = s["_yf_info"]
 
         net_margin = safe_float(info.get("profitMargins"))
-        op_cf      = safe_float(info.get("operatingCashflow"))
         rev_growth = safe_float(info.get("revenueGrowth"))
         sector     = s.get("sector", "")
 
@@ -374,9 +409,11 @@ def fetch_candidates(test=False):
             "Asset Management", "Capital Markets"
         )
 
+        op_cf_cr = None   # will be populated below for non-financial stocks
+
         if not is_financial:
 
-            # Reject 1: loss-making on net basis
+            # Check 1 (free — cached info): loss-making on net basis
             # Benefit of doubt if data missing (None passes through)
             if net_margin is not None and net_margin < config.MIN_NET_MARGIN:
                 profit_failed += 1
@@ -384,15 +421,19 @@ def fetch_candidates(test=False):
                       f"({net_margin*100:.1f}%)")
                 continue
 
-            # Reject 2: burning cash operationally
-            if op_cf is not None and op_cf < config.MIN_OP_CASHFLOW:
+            # Check 2 (new API call — only reached if Check 1 passed):
+            # burning cash operationally; fetch from cashflow statement
+            # for better coverage than info.get("operatingCashflow")
+            op_cf_cr = get_operating_cashflow(s["ticker"])
+            if op_cf_cr is not None and op_cf_cr < config.MIN_OP_CASHFLOW:
                 profit_failed += 1
-                print(f"  x {sym:20s}  negative operating cash flow")
+                print(f"  x {sym:20s}  negative operating cash flow "
+                      f"({op_cf_cr:.0f} Cr)")
                 continue
 
-            # Reject 3: BOTH revenue shrinking AND margins negative
-            # Either alone could be a one-off; both together =
-            # structural deterioration
+            # Check 3 (free — cached info): BOTH revenue shrinking AND
+            # margins negative — either alone could be a one-off; both
+            # together = structural deterioration
             if (rev_growth is not None and rev_growth < 0 and
                     net_margin is not None and net_margin < 0):
                 profit_failed += 1
@@ -401,12 +442,16 @@ def fetch_candidates(test=False):
                       f"margin={net_margin*100:.1f}%)")
                 continue
 
+        s["_ocf_cr"] = op_cf_cr  # store for build_output; None for financials
+
         # Track which profitability fields had data
         profitability_checked = not is_financial
+        pe = safe_float(info.get("trailingPE"))
         profitability_data = {
-            "net_margin_available":  net_margin is not None,
-            "op_cf_available":       op_cf is not None,
-            "rev_growth_available":  rev_growth is not None,
+            "net_margin_available": net_margin is not None,
+            "op_cf_available":      op_cf_cr is not None,
+            "rev_growth_available": rev_growth is not None,
+            "pe_available":         pe is not None and 1 <= (pe or 0) <= 150,
         }
         s["profitability_checked"] = profitability_checked
         s["profitability_data"]    = profitability_data
@@ -594,7 +639,7 @@ def build_output(s):
         "operating_margin":    fundamentals.get("operating_margin"),
         "net_margin":          fundamentals.get("net_margin"),
         "revenue_growth":      fundamentals.get("revenue_growth"),
-        "ocf_cr":              fundamentals.get("ocf_cr"),
+        "ocf_cr":              s.get("_ocf_cr") or fundamentals.get("ocf_cr"),
         "52w_high":            s.get("high_52w"),
         "52w_low":             s.get("low_52w"),
         "promoter_pledge_pct": s.get("promoter_pledge_pct"),
