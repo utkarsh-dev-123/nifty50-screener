@@ -22,7 +22,7 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - run: python daily_screen.py --test
+      - run: python daily_screen.py
         # No GEMINI_API_KEY needed — daily_screen.py does not call Gemini.
 
       - name: Commit data.json
