@@ -31,6 +31,9 @@ MIN_LISTING_AGE_DAYS = 365    # reject stocks listed < 1 year ago
 # Benefit of doubt if data missing (None = pass through)
 MIN_NET_MARGIN  = 0.0  # reject if net margin < 0% (loss-making)
 MIN_OP_CASHFLOW = 0    # Crores — reject if OCF < 0 (burning cash)
+# PE sanity bounds — filter out data errors and pure speculation
+PE_MIN = 1    # below this = data error (impossible for a profitable company)
+PE_MAX = 150  # above this = speculative, not a contrarian value opportunity
 # Combined reject: revenue shrinking AND margins negative simultaneously
 # Either alone could be temporary; both together = deteriorating business
 

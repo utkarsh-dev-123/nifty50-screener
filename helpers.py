@@ -154,6 +154,8 @@ def passes_graham_screens(ticker, info):
                 failures.append(f"current ratio {cr:.2f} ≤ 2.0")
         else:
             s7 = None
+            # Uncomment to debug Screen 7 null coverage:
+            # print(f"    Screen 7: currentRatio missing for {ticker} (sector: {sector})")
 
     # Screen 8 — total debt vs net current assets
     total_debt  = safe_float(info.get("totalDebt"))

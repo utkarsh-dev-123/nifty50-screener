@@ -75,7 +75,7 @@ def fetch_nse_context(symbol, nse):
                     continue
             if dt is None or dt >= cutoff:
                 recent.append({
-                    "date":    dt_str[:10],
+                    "date":    dt_str[:11],
                     "subject": (item.get("subject") or item.get("desc") or
                                 item.get("headline") or ""),
                 })
@@ -396,6 +396,7 @@ def fetch_candidates(test=False):
 
         net_margin = safe_float(info.get("profitMargins"))
         rev_growth = safe_float(info.get("revenueGrowth"))
+        pe         = safe_float(info.get("trailingPE"))
         sector     = s.get("sector", "")
 
         # Skip profitability checks for financial sector —
@@ -412,6 +413,16 @@ def fetch_candidates(test=False):
         op_cf_cr = None   # will be populated below for non-financial stocks
 
         if not is_financial:
+
+            # Check 0 (free — cached info): PE sanity / data quality gate
+            # PE < 1 = impossible for a profitable company = data error
+            # PE > 150 = speculative, not a contrarian value opportunity
+            if pe is not None and (pe < config.PE_MIN or pe > config.PE_MAX):
+                profit_failed += 1
+                print(f"  x {sym:20s}  PE sanity fail "
+                      f"(pe={pe:.1f} — likely data error or "
+                      f"extreme speculation)")
+                continue
 
             # Check 1 (free — cached info): loss-making on net basis
             # Benefit of doubt if data missing (None passes through)
@@ -446,7 +457,6 @@ def fetch_candidates(test=False):
 
         # Track which profitability fields had data
         profitability_checked = not is_financial
-        pe = safe_float(info.get("trailingPE"))
         profitability_data = {
             "net_margin_available": net_margin is not None,
             "op_cf_available":      op_cf_cr is not None,
