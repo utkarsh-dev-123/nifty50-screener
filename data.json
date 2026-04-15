@@ -1,58 +1,9 @@
 {
   "date": "2026-04-15",
-  "generated_at": "15 Apr 2026, 04:14 PM IST",
+  "generated_at": "15 Apr 2026, 08:36 PM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
-    {
-      "ticker": "JYOTICNC",
-      "name": "Jyoti CNC Automation Limited",
-      "sector": "Industrials",
-      "price": 698.65,
-      "pChange": -0.14,
-      "change_1m": -3.21,
-      "change_3m": -13.36,
-      "change_1y": -35.11,
-      "drawdown_52w": -47.5,
-      "market_cap_cr": 15888.9,
-      "is_small_cap": true,
-      "volume_ratio": 1.19,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": false,
-      "pe_ratio": 0.644636,
-      "pb_ratio": 8.677696,
-      "roe": "N/A",
-      "debt_to_equity": 39.56,
-      "operating_margin": 24.5,
-      "net_margin": 17.1,
-      "revenue_growth": 28.1,
-      "ocf_cr": "N/A",
-      "52w_high": 1330.0,
-      "52w_low": 686.75,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "14-Apr-202",
-          "subject": "Change in Director(s)"
-        },
-        {
-          "date": "14-Apr-202",
-          "subject": "Change in Management"
-        },
-        {
-          "date": "14-Apr-202",
-          "subject": "Shareholders meeting"
-        }
-      ]
-    },
     {
       "ticker": "HYUNDAI",
       "name": "HYUNDAI",
@@ -75,7 +26,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 25.005615,
       "pb_ratio": 8.244322,
       "roe": "N/A",
@@ -83,21 +34,21 @@
       "operating_margin": 8.1,
       "net_margin": 8.3,
       "revenue_growth": 8.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 4344.9,
       "52w_high": 2890.0,
       "52w_low": 1631.3,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "02-Apr-202",
+          "date": "02-Apr-2026",
           "subject": "Shareholders meeting"
         }
       ]
@@ -138,15 +89,15 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "25-Mar-202",
+          "date": "25-Mar-2026",
           "subject": "Trading Window"
         },
         {
-          "date": "10-Mar-202",
+          "date": "10-Mar-2026",
           "subject": "Spurt in Volume"
         }
       ]
@@ -187,15 +138,15 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "07-Apr-202",
+          "date": "07-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "03-Apr-202",
+          "date": "03-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "31-Mar-202",
+          "date": "31-Mar-2026",
           "subject": "General Updates"
         }
       ]
@@ -222,7 +173,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 13.021436,
       "pb_ratio": 1.1485538,
       "roe": "N/A",
@@ -230,21 +181,21 @@
       "operating_margin": 10.9,
       "net_margin": 6.5,
       "revenue_growth": -10.9,
-      "ocf_cr": "N/A",
+      "ocf_cr": 2740.8,
       "52w_high": 360.6,
       "52w_low": 226.35,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "10-Apr-202",
+          "date": "10-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "09-Apr-202",
+          "date": "09-Apr-2026",
           "subject": "Disclosure under SEBI Takeover Regulations"
         },
         {
-          "date": "06-Apr-202",
+          "date": "06-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         }
       ]
@@ -271,7 +222,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 49.449253,
       "pb_ratio": 1.3683798,
       "roe": "N/A",
@@ -279,21 +230,21 @@
       "operating_margin": 32.2,
       "net_margin": 42.6,
       "revenue_growth": 13.4,
-      "ocf_cr": "N/A",
+      "ocf_cr": 875.8,
       "52w_high": 1550.0,
       "52w_low": 930.5,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Change in Management"
         },
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Updates"
         }
       ]
@@ -320,7 +271,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 23.65746,
       "pb_ratio": 2.2783866,
       "roe": "N/A",
@@ -328,21 +279,21 @@
       "operating_margin": 19.7,
       "net_margin": 12.6,
       "revenue_growth": 35.7,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1214.1,
       "52w_high": 57.89,
       "52w_low": 35.83,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Action(s) initiated or orders passed"
         },
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "02-Apr-202",
+          "date": "02-Apr-2026",
           "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         }
       ]
@@ -369,7 +320,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 21.388968,
       "pb_ratio": 5.331028,
       "roe": "N/A",
@@ -377,21 +328,21 @@
       "operating_margin": 21.5,
       "net_margin": 17.1,
       "revenue_growth": 25.4,
-      "ocf_cr": "N/A",
+      "ocf_cr": 654.6,
       "52w_high": 2497.5,
       "52w_low": 1176.65,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "01-Apr-202",
+          "date": "01-Apr-2026",
           "subject": "Updates"
         },
         {
-          "date": "30-Mar-202",
+          "date": "30-Mar-2026",
           "subject": "Updates"
         },
         {
-          "date": "27-Mar-202",
+          "date": "27-Mar-2026",
           "subject": "Trading Window"
         }
       ]
@@ -418,7 +369,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 24.704035,
       "pb_ratio": 3.4850545,
       "roe": "N/A",
@@ -426,21 +377,21 @@
       "operating_margin": 11.9,
       "net_margin": 6.9,
       "revenue_growth": 16.2,
-      "ocf_cr": "N/A",
+      "ocf_cr": 701.1,
       "52w_high": 403.8,
       "52w_low": 202.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "Shareholders meeting"
         },
         {
-          "date": "09-Apr-202",
+          "date": "09-Apr-2026",
           "subject": "Press Release"
         },
         {
-          "date": "02-Apr-202",
+          "date": "02-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         }
       ]
@@ -467,7 +418,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 23.336998,
       "pb_ratio": 6.3196917,
       "roe": "N/A",
@@ -475,21 +426,21 @@
       "operating_margin": 29.4,
       "net_margin": 20.8,
       "revenue_growth": 9.8,
-      "ocf_cr": "N/A",
+      "ocf_cr": 895.9,
       "52w_high": 653.35,
       "52w_low": 385.5,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "06-Apr-202",
+          "date": "06-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "02-Apr-202",
+          "date": "02-Apr-2026",
           "subject": "Press Release"
         },
         {
-          "date": "01-Apr-202",
+          "date": "01-Apr-2026",
           "subject": "Acquisition"
         }
       ]
@@ -516,7 +467,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 44.745552,
       "pb_ratio": 3.639348,
       "roe": "N/A",
@@ -524,21 +475,21 @@
       "operating_margin": 32.8,
       "net_margin": 26.9,
       "revenue_growth": 19.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 171.0,
       "52w_high": 3290.5,
       "52w_low": 1485.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "10-Apr-202",
+          "date": "10-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "09-Apr-202",
+          "date": "09-Apr-2026",
           "subject": "Updates"
         },
         {
-          "date": "07-Apr-202",
+          "date": "07-Apr-2026",
           "subject": "Press Release"
         }
       ]
@@ -579,15 +530,15 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Updates"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         },
         {
-          "date": "11-Apr-202",
+          "date": "11-Apr-2026",
           "subject": "Copy of Newspaper Publication"
         }
       ]
@@ -614,7 +565,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 28.314764,
       "pb_ratio": 1.1862712,
       "roe": "N/A",
@@ -622,21 +573,21 @@
       "operating_margin": 21.3,
       "net_margin": 3.5,
       "revenue_growth": 9.5,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1328.5,
       "52w_high": 477.5,
       "52w_low": 276.25,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         },
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Outcome of Board Meeting"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "General Updates"
         }
       ]
@@ -663,7 +614,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 28.005424,
       "pb_ratio": 4.9589186,
       "roe": "N/A",
@@ -671,21 +622,21 @@
       "operating_margin": 35.5,
       "net_margin": 22.1,
       "revenue_growth": 27.1,
-      "ocf_cr": "N/A",
+      "ocf_cr": 950.4,
       "52w_high": 1082.0,
       "52w_low": 691.35,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company"
         },
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "31-Mar-202",
+          "date": "31-Mar-2026",
           "subject": "Pendency of Litigation(s)/dispute(s) or the outcome impacting the Company"
         }
       ]
@@ -712,7 +663,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 17.214111,
       "pb_ratio": 2.219747,
       "roe": "N/A",
@@ -720,21 +671,21 @@
       "operating_margin": 10.7,
       "net_margin": 4.3,
       "revenue_growth": 15.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 715.8,
       "52w_high": 611.9,
       "52w_low": 298.05,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Acquisition"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Appointment"
         },
         {
-          "date": "06-Apr-202",
+          "date": "06-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         }
       ]
@@ -761,7 +712,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 31.098316,
       "pb_ratio": 10.381852,
       "roe": "N/A",
@@ -769,21 +720,21 @@
       "operating_margin": 31.3,
       "net_margin": 28.4,
       "revenue_growth": 18.4,
-      "ocf_cr": "N/A",
+      "ocf_cr": 833.4,
       "52w_high": 820.25,
       "52w_low": 492.65,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Change in Director(s)"
         },
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "Cessation"
         },
         {
-          "date": "06-Apr-202",
+          "date": "06-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         }
       ]
@@ -810,7 +761,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 44.08116,
       "pb_ratio": 6.5479984,
       "roe": "N/A",
@@ -818,21 +769,21 @@
       "operating_margin": 11.5,
       "net_margin": 10.2,
       "revenue_growth": 3.7,
-      "ocf_cr": "N/A",
+      "ocf_cr": 699.2,
       "52w_high": 797.0,
       "52w_low": 507.4,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "ESOP/ESOS/ESPS"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Change in Management"
         }
       ]
@@ -859,7 +810,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 30.367893,
       "pb_ratio": 1.9951746,
       "roe": "N/A",
@@ -867,21 +818,21 @@
       "operating_margin": 3.8,
       "net_margin": 9.4,
       "revenue_growth": 10.2,
-      "ocf_cr": "N/A",
+      "ocf_cr": 2237.3,
       "52w_high": 624.95,
       "52w_low": 394.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         },
         {
-          "date": "11-Apr-202",
+          "date": "11-Apr-2026",
           "subject": "General Updates"
         }
       ]
@@ -908,7 +859,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 10.166939,
       "pb_ratio": 1.3483201,
       "roe": "N/A",
@@ -916,21 +867,21 @@
       "operating_margin": 6.1,
       "net_margin": 10.7,
       "revenue_growth": 9.4,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1711.5,
       "52w_high": 2119.9,
       "52w_low": 1251.7,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         },
         {
-          "date": "11-Apr-202",
+          "date": "11-Apr-2026",
           "subject": "General Updates"
         }
       ]
@@ -971,15 +922,15 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Updates"
         },
         {
-          "date": "11-Apr-202",
+          "date": "11-Apr-2026",
           "subject": "Copy of Newspaper Publication"
         }
       ]
@@ -1006,7 +957,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 12.091806,
       "pb_ratio": 1.9714795,
       "roe": "N/A",
@@ -1014,21 +965,21 @@
       "operating_margin": 7.0,
       "net_margin": 5.0,
       "revenue_growth": 40.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1386.0,
       "52w_high": 234.39,
       "52w_low": 99.7,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "01-Apr-202",
+          "date": "01-Apr-2026",
           "subject": "Capacity addition"
         },
         {
-          "date": "31-Mar-202",
+          "date": "31-Mar-2026",
           "subject": "Trading Window"
         }
       ]
@@ -1055,7 +1006,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 52.003624,
       "pb_ratio": 6.287592,
       "roe": "N/A",
@@ -1063,21 +1014,21 @@
       "operating_margin": 4.5,
       "net_margin": 5.7,
       "revenue_growth": 2.6,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1878.2,
       "52w_high": 447.8,
       "52w_low": 248.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "02-Apr-202",
+          "date": "02-Apr-2026",
           "subject": "Bagging/Receiving of orders/contracts"
         },
         {
-          "date": "25-Mar-202",
+          "date": "25-Mar-2026",
           "subject": "Trading Window"
         }
       ]
@@ -1104,7 +1055,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 38.300983,
       "pb_ratio": 6.23678,
       "roe": "N/A",
@@ -1112,21 +1063,21 @@
       "operating_margin": 13.4,
       "net_margin": 7.9,
       "revenue_growth": 26.2,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1237.1,
       "52w_high": 1994.0,
       "52w_low": 1008.1,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         },
         {
-          "date": "14-Apr-202",
+          "date": "14-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "Press Release"
         }
       ]
@@ -1153,7 +1104,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 26.991394,
       "pb_ratio": 3.224962,
       "roe": "N/A",
@@ -1161,21 +1112,21 @@
       "operating_margin": 6.4,
       "net_margin": 12.4,
       "revenue_growth": 20.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 431.4,
       "52w_high": 1255.0,
       "52w_low": 595.2,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "15-Apr-202",
+          "date": "15-Apr-2026",
           "subject": "Press Release"
         },
         {
-          "date": "09-Apr-202",
+          "date": "09-Apr-2026",
           "subject": "Disclosure under SEBI Takeover Regulations"
         },
         {
-          "date": "03-Apr-202",
+          "date": "03-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         }
       ]
@@ -1202,7 +1153,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 54.1652,
       "pb_ratio": 9.456355,
       "roe": "N/A",
@@ -1210,21 +1161,21 @@
       "operating_margin": 10.3,
       "net_margin": 10.5,
       "revenue_growth": 85.8,
-      "ocf_cr": "N/A",
+      "ocf_cr": 288.8,
       "52w_high": 1764.8,
       "52w_low": 1000.5,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "07-Apr-202",
+          "date": "07-Apr-2026",
           "subject": "Disclosure under SEBI Takeover Regulations"
         },
         {
-          "date": "30-Mar-202",
+          "date": "30-Mar-2026",
           "subject": "Trading Window"
         },
         {
-          "date": "17-Mar-202",
+          "date": "17-Mar-2026",
           "subject": "Shareholders meeting"
         }
       ]
@@ -1251,7 +1202,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 47.6506,
       "pb_ratio": 2.0391853,
       "roe": "N/A",
@@ -1259,21 +1210,21 @@
       "operating_margin": 8.6,
       "net_margin": 4.3,
       "revenue_growth": 8.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 373.1,
       "52w_high": 537.7,
       "52w_low": 323.05,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "09-Apr-202",
+          "date": "09-Apr-2026",
           "subject": "Disclosure under SEBI Takeover Regulations"
         },
         {
-          "date": "30-Mar-202",
+          "date": "30-Mar-2026",
           "subject": "Trading Window"
         }
       ]
@@ -1300,7 +1251,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 44.452053,
       "pb_ratio": 3.0491242,
       "roe": "N/A",
@@ -1308,21 +1259,21 @@
       "operating_margin": 29.5,
       "net_margin": 19.2,
       "revenue_growth": "N/A",
-      "ocf_cr": "N/A",
+      "ocf_cr": 803.5,
       "52w_high": 261.62,
       "52w_low": 137.3,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "06-Apr-202",
+          "date": "06-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "25-Mar-202",
+          "date": "25-Mar-2026",
           "subject": "Trading Window"
         },
         {
-          "date": "19-Mar-202",
+          "date": "19-Mar-2026",
           "subject": "ESOP/ESOS/ESPS"
         }
       ]
@@ -1349,7 +1300,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 80.0657,
       "pb_ratio": 17.885796,
       "roe": "N/A",
@@ -1357,21 +1308,21 @@
       "operating_margin": 28.6,
       "net_margin": 24.9,
       "revenue_growth": 109.7,
-      "ocf_cr": "N/A",
+      "ocf_cr": 544.2,
       "52w_high": 760.05,
       "52w_low": 198.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "09-Apr-202",
+          "date": "09-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "04-Apr-202",
+          "date": "04-Apr-2026",
           "subject": "Press Release"
         },
         {
-          "date": "03-Apr-202",
+          "date": "03-Apr-2026",
           "subject": "General Updates"
         }
       ]
@@ -1412,15 +1363,15 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "04-Apr-202",
+          "date": "04-Apr-2026",
           "subject": "General Updates"
         },
         {
-          "date": "02-Apr-202",
+          "date": "02-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         }
       ]
@@ -1447,7 +1398,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 15.951603,
       "pb_ratio": 3.9750957,
       "roe": "N/A",
@@ -1455,120 +1406,22 @@
       "operating_margin": 5.6,
       "net_margin": 4.1,
       "revenue_growth": 8.4,
-      "ocf_cr": "N/A",
+      "ocf_cr": 644.3,
       "52w_high": 464.2,
       "52w_low": 207.15,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "07-Apr-202",
+          "date": "07-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "01-Apr-202",
+          "date": "01-Apr-2026",
           "subject": "Shareholders meeting"
         },
         {
-          "date": "01-Apr-202",
+          "date": "01-Apr-2026",
           "subject": "Change in Management"
-        }
-      ]
-    },
-    {
-      "ticker": "IRCON",
-      "name": "Ircon International Limited",
-      "sector": "Industrials",
-      "price": 141.37,
-      "pChange": 4.23,
-      "change_1m": 22.58,
-      "change_3m": -13.12,
-      "change_1y": -6.11,
-      "drawdown_52w": -37.3,
-      "market_cap_cr": 13296.1,
-      "is_small_cap": true,
-      "volume_ratio": 0.17,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": false,
-      "pe_ratio": 21.64931,
-      "pb_ratio": 2.0647902,
-      "roe": "N/A",
-      "debt_to_equity": 79.151,
-      "operating_margin": 5.5,
-      "net_margin": 6.6,
-      "revenue_growth": -18.9,
-      "ocf_cr": "N/A",
-      "52w_high": 225.52,
-      "52w_low": 114.5,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "06-Apr-202",
-          "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
-        },
-        {
-          "date": "24-Mar-202",
-          "subject": "Credit Rating"
-        },
-        {
-          "date": "24-Mar-202",
-          "subject": "Trading Window"
-        }
-      ]
-    },
-    {
-      "ticker": "TITAGARH",
-      "name": "Titagarh Rail Systems Limited",
-      "sector": "Industrials",
-      "price": 717.55,
-      "pChange": 3.09,
-      "change_1m": 24.82,
-      "change_3m": -12.6,
-      "change_1y": -3.84,
-      "drawdown_52w": -26.4,
-      "market_cap_cr": 9663.5,
-      "is_small_cap": true,
-      "volume_ratio": 1.01,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": false,
-      "pe_ratio": 53.34944,
-      "pb_ratio": 3.8209217,
-      "roe": "N/A",
-      "debt_to_equity": 25.09,
-      "operating_margin": 9.6,
-      "net_margin": 5.5,
-      "revenue_growth": -7.8,
-      "ocf_cr": "N/A",
-      "52w_high": 974.35,
-      "52w_low": 568.7,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "06-Apr-202",
-          "subject": "Press Release"
-        },
-        {
-          "date": "04-Apr-202",
-          "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
-        },
-        {
-          "date": "01-Apr-202",
-          "subject": "Credit Rating"
         }
       ]
     },
@@ -1594,7 +1447,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 25.763472,
       "pb_ratio": 4.0379534,
       "roe": 16.9,
@@ -1602,21 +1455,21 @@
       "operating_margin": 28.2,
       "net_margin": 20.4,
       "revenue_growth": 14.4,
-      "ocf_cr": "N/A",
+      "ocf_cr": 1565.6,
       "52w_high": 1531.0,
       "52w_low": 650.8,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Allotment of Securities"
         },
         {
-          "date": "07-Apr-202",
+          "date": "07-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "07-Apr-202",
+          "date": "07-Apr-2026",
           "subject": "Updates"
         }
       ]
@@ -1643,7 +1496,7 @@
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
-      "op_cf_available": false,
+      "op_cf_available": true,
       "pe_ratio": 19.673002,
       "pb_ratio": 1.9097273,
       "roe": "N/A",
@@ -1651,21 +1504,21 @@
       "operating_margin": 9.0,
       "net_margin": 7.5,
       "revenue_growth": -4.0,
-      "ocf_cr": "N/A",
+      "ocf_cr": 789.9,
       "52w_high": 1376.0,
       "52w_low": 750.3,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "13-Apr-202",
+          "date": "13-Apr-2026",
           "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
         },
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Press Release"
         },
         {
-          "date": "08-Apr-202",
+          "date": "08-Apr-2026",
           "subject": "Updates"
         }
       ]
