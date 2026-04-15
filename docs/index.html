@@ -483,6 +483,22 @@ const fmt   = v  => (v === null || v === undefined || v === 'N/A') ? '—' : v;
 const fmtPct = v => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(1) + '%'; };
 const fmtNum = v => { const n = parseFloat(v); return isNaN(n) ? '—' : n.toFixed(1); };
 
+function fmtCr(v) {
+  const n = parseFloat(v);
+  if (isNaN(n)) return '—';
+  if (n >= 100000) return '₹' + (n/100000).toFixed(1) + 'L Cr';
+  if (n >= 1000)   return '₹' + (n/1000).toFixed(1) + 'K Cr';
+  return '₹' + n.toFixed(0) + ' Cr';
+}
+
+function grahamPill(val, label) {
+  if (val === null || val === undefined)
+    return '<span style="color:#bbb">— ' + label + '</span>';
+  return val
+    ? '<span style="background:#EAF3DE;color:#3B6D11;padding:2px 8px;border-radius:99px;font-size:11px">✓ ' + label + '</span>'
+    : '<span style="background:#FCEBEB;color:#A32D2D;padding:2px 8px;border-radius:99px;font-size:11px">✗ ' + label + '</span>';
+}
+
 function scoreClass(s) {
   return s >= 7 ? 'buy' : s >= 5 ? 'watch' : 'avoid';
 }
@@ -723,23 +739,174 @@ function escAttr(s) {
 
 // ── Expand panel ──────────────────────────────────────────────────────────────
 function panelHtml(sym) {
+  const s  = stockMap[sym];
   const st = aState[sym];
+
+  // ── Section 1: Fundamentals ───────────────────────────────────────────────
+  let section1 = '';
+  if (s) {
+    const pch      = parseFloat(s.pChange);
+    const pchColor = isNaN(pch) ? '#888' : pch >= 0 ? '#2D7A3A' : '#A32D2D';
+    const pchBg    = isNaN(pch) ? '#f1f0ec' : pch >= 0 ? '#EAF3DE' : '#FCEBEB';
+    const dd       = parseFloat(s.drawdown_52w);
+
+    // Inline warning icon for missing data
+    const warn = v => (v === null || v === undefined || v === 'N/A')
+      ? ' <span title="Data unavailable" style="cursor:help;opacity:0.55">⚠</span>' : '';
+
+    // Coloured percentage table cell
+    const pctCell = v => {
+      const n = parseFloat(v);
+      if (isNaN(n)) return '<td style="color:#aaa">—</td>';
+      return `<td class="${n < 0 ? 'c-neg' : 'c-pos'}">${n.toFixed(1)}%</td>`;
+    };
+
+    // ── Card 1: Price & Momentum ─────────────────────────────────────────────
+    const card1 = `
+    <div class="rp-card">
+      <div class="rp-card-title">Price &amp; Momentum</div>
+      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:10px">
+        <span style="font-size:22px;font-weight:700">₹${fmt(s.price)}</span>
+        ${!isNaN(pch) ? `<span style="background:${pchBg};color:${pchColor};padding:2px 8px;border-radius:99px;font-size:12px;font-weight:600">${pch>=0?'+':''}${pch.toFixed(1)}%</span>` : ''}
+      </div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr><td style="color:#888;padding:3px 0;width:55%">1M change</td>${pctCell(s.change_1m)}</tr>
+        <tr><td style="color:#888;padding:3px 0">3M change</td>${pctCell(s.change_3m)}</tr>
+        <tr><td style="color:#888;padding:3px 0">1Y change</td>${pctCell(s.change_1y)}</tr>
+        <tr><td style="color:#888;padding:3px 0">52W drawdown</td><td style="${isNaN(dd)?'color:#aaa':'color:#A32D2D;font-weight:500'}">${isNaN(dd)?'—':dd.toFixed(1)+'%'}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">52W High</td><td>${s['52w_high']!=null?'₹'+s['52w_high']:'—'}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">52W Low</td><td>${s['52w_low']!=null?'₹'+s['52w_low']:'—'}</td></tr>
+      </table>
+    </div>`;
+
+    // ── Card 2: Valuation ────────────────────────────────────────────────────
+    const card2 = `
+    <div class="rp-card">
+      <div class="rp-card-title">Valuation</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr><td style="color:#888;padding:3px 0;width:55%">P/E${warn(s.pe_ratio)}</td>
+            <td>${fmtNum(s.pe_ratio)}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">P/B${warn(s.pb_ratio)}</td>
+            <td>${fmtNum(s.pb_ratio)}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">Market Cap${warn(s.market_cap_cr)}</td>
+            <td>${fmtCr(s.market_cap_cr)}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">ROE${warn(s.roe)}</td>
+            <td>${fmtPct(s.roe)}</td></tr>
+      </table>
+    </div>`;
+
+    // ── Card 3: Quality ──────────────────────────────────────────────────────
+    const card3 = `
+    <div class="rp-card">
+      <div class="rp-card-title">Quality</div>
+      <table style="width:100%;font-size:12px;border-collapse:collapse">
+        <tr><td style="color:#888;padding:3px 0;width:60%">Net Margin${warn(s.net_margin)}</td>
+            <td>${fmtPct(s.net_margin)}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">Op. Margin${warn(s.operating_margin)}</td>
+            <td>${fmtPct(s.operating_margin)}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">Revenue Growth${warn(s.revenue_growth)}</td>
+            <td>${fmtPct(s.revenue_growth)}</td></tr>
+        <tr><td style="color:#888;padding:3px 0">OCF${warn(s.ocf_cr)}</td>
+            <td>${fmtCr(s.ocf_cr)}</td></tr>
+      </table>
+    </div>`;
+
+    // ── Card 4: Balance Sheet (Graham screens) ───────────────────────────────
+    const pledgePct   = parseFloat(s.promoter_pledge_pct);
+    const pledgeColor = (!isNaN(pledgePct) && pledgePct > 20) ? '#A32D2D' : '#2D7A3A';
+    const card4 = `
+    <div class="rp-card">
+      <div class="rp-card-title">Balance Sheet</div>
+      <div style="font-size:12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px">
+          <span style="color:#888">D/E (${fmtNum(s.debt_to_equity)})</span>
+          ${grahamPill(s.s6_debt_equity, 'D/E ok')}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px">
+          <span style="color:#888">Current Ratio</span>
+          ${grahamPill(s.s7_current_ratio, 'CR ok')}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:7px">
+          <span style="color:#888">Debt Cover</span>
+          ${grahamPill(s.s8_debt_cover, 'Cover ok')}
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,0.06)">
+          <span style="color:#888">Promoter Pledge</span>
+          <span style="font-weight:600;color:${isNaN(pledgePct)?'#888':pledgeColor}">${isNaN(pledgePct)?'—':pledgePct.toFixed(1)+'%'}</span>
+        </div>
+      </div>
+    </div>`;
+
+    // ── Card 5: Triggers & Flags ─────────────────────────────────────────────
+    const triggers = [];
+    if (s.triggered_1d)  triggers.push('<span style="background:#FFF4E5;color:#854F0B;padding:2px 8px;border-radius:99px;font-size:11px;white-space:nowrap">📅 1-Day drop</span>');
+    if (s.triggered_1m)  triggers.push('<span style="background:#FFF4E5;color:#854F0B;padding:2px 8px;border-radius:99px;font-size:11px;white-space:nowrap">📆 1-Month drop</span>');
+    if (s.triggered_3m)  triggers.push('<span style="background:#FFF4E5;color:#854F0B;padding:2px 8px;border-radius:99px;font-size:11px;white-space:nowrap">📆 3-Month drop</span>');
+    if (s.panic_selling) triggers.push('<span style="background:#FCEBEB;color:#A32D2D;padding:2px 8px;border-radius:99px;font-size:11px;white-space:nowrap">🔥 Panic selling</span>');
+    if (s.is_small_cap)  triggers.push('<span style="background:#EEF3FB;color:#1D5FA0;padding:2px 8px;border-radius:99px;font-size:11px;white-space:nowrap">🏠 Small cap</span>');
+    const volRatio = parseFloat(s.volume_ratio);
+    const card5 = `
+    <div class="rp-card">
+      <div class="rp-card-title">Triggers &amp; Flags</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px">
+        ${triggers.length ? triggers.join('') : '<span style="color:#bbb;font-size:12px">No triggers fired</span>'}
+      </div>
+      <div style="font-size:12px;margin-top:6px">
+        <span style="color:#888">Volume ratio </span>
+        <span style="font-weight:600">${isNaN(volRatio)?'—':volRatio.toFixed(1)+'×'}</span>
+        <span style="color:#aaa;font-size:11px"> avg vol</span>
+      </div>
+    </div>`;
+
+    // ── Card 6: Announcements ────────────────────────────────────────────────
+    const anns = s.announcements || [];
+    const annHtml = anns.length
+      ? anns.map(a => `
+        <div style="border-left:2px solid #e8e8e4;padding:4px 8px;margin-bottom:6px">
+          <div style="font-size:10px;color:#aaa">${a.date || ''}</div>
+          <div style="font-size:12px;color:#5F5E5A">${a.subject || ''}</div>
+        </div>`).join('')
+      : '<div style="font-size:12px;color:#bbb">No recent announcements</div>';
+    const card6 = `
+    <div class="rp-card">
+      <div class="rp-card-title">Announcements</div>
+      ${annHtml}
+    </div>`;
+
+    section1 = `<div class="rp-grid">${card1}${card2}${card3}${card4}${card5}${card6}</div>`;
+  }
+
+  // ── Section 2: AI Analysis ─────────────────────────────────────────────────
+  let section2 = '';
   if (!st || st.status === 'idle') {
-    return ownerMode
-      ? `<div class="rp-empty">Click <strong>Analyse</strong> to run a deep three-prompt Gemini analysis for <strong>${sym}</strong>.</div>`
-      : `<div class="rp-empty">No analysis available yet for <strong>${sym}</strong>.</div>`;
+    if (ownerMode) {
+      section2 = `
+      <div style="margin-top:14px;text-align:right">
+        <button class="btn-an s-idle" onclick="triggerAnalysis('${sym}');event.stopPropagation()">Run AI Analysis ↓</button>
+      </div>`;
+    }
+  } else if (st.status === 'dispatching' || st.status === 'polling') {
+    section2 = `
+    <div class="rp-loading" style="justify-content:flex-start;padding:14px 0 4px">
+      <span class="spin" style="width:14px;height:14px;border-width:2px"></span>
+      Workflow dispatched for ${sym} — checking for results every 10 s…
+    </div>`;
+  } else if (st.status === 'error') {
+    section2 = `
+    <div style="margin-top:12px;background:#FCEBEB;border-radius:8px;padding:12px 14px;color:#A32D2D;font-size:13px;line-height:1.5">
+      ${st.error || 'Analysis failed.'}
+    </div>`;
+  } else if (st.status === 'done' && st.report) {
+    section2 = `
+    <div style="border-top:2px solid rgba(29,158,117,0.2);margin:16px 0 0;padding-top:16px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:#aaa;margin-bottom:12px">AI Analysis</div>
+      ${reportHtml(st.report)}
+    </div>`;
   }
-  if (st.status === 'dispatching' || st.status === 'polling') {
-    return `<div class="rp-loading"><span class="spin" style="width:14px;height:14px;border-width:2px"></span>
-      Workflow dispatched for ${sym} — checking for results every 10 s…</div>`;
-  }
-  if (st.status === 'error') {
-    return `<div class="rp-empty" style="color:#A32D2D">${st.error || 'Analysis failed.'}</div>`;
-  }
-  if (st.status === 'done' && st.report) {
-    return reportHtml(st.report);
-  }
-  return '';
+
+  if (!s) return section2 || `<div class="rp-loading"><span class="spin" style="width:14px;height:14px;border-width:2px"></span>Loading…</div>`;
+
+  return section1 + section2;
 }
 
 function reportHtml(r) {
@@ -992,10 +1159,12 @@ async function preloadAnalyses(stocks) {
         const report = await res.json();
         // Quietly populate state and patch only the affected cells
         aState[sym] = { status: 'done', report };
-        const btnEl = document.getElementById('btn-' + sym);
-        const scEl  = document.getElementById('sc-'  + sym);
-        if (btnEl) btnEl.innerHTML = btnHtml(sym);
-        if (scEl)  scEl.innerHTML  = scoreCellHtml(sym);
+        const btnEl   = document.getElementById('btn-'   + sym);
+        const scEl    = document.getElementById('sc-'    + sym);
+        const panelEl = document.getElementById('panel-' + sym);
+        if (btnEl)   btnEl.innerHTML   = btnHtml(sym);
+        if (scEl)    scEl.innerHTML    = scoreCellHtml(sym);
+        if (panelEl) panelEl.innerHTML = panelHtml(sym);
       }
     } catch (_) { /* file absent or network error — leave as idle */ }
     // Small stagger to avoid hammering githubusercontent
