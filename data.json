@@ -1,6 +1,6 @@
 {
-  "date": "2026-06-02",
-  "generated_at": "02 Jun 2026, 08:15 AM IST",
+  "date": "2026-06-03",
+  "generated_at": "03 Jun 2026, 08:36 AM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
@@ -8,15 +8,15 @@
       "ticker": "JPPOWER",
       "name": "Jaiprakash Power Ventures Limited",
       "sector": "Utilities",
-      "price": 18.99,
-      "pChange": 0.96,
-      "change_1m": -13.17,
-      "change_3m": 35.26,
-      "change_1y": 3.77,
-      "drawdown_52w": -31.4,
-      "market_cap_cr": 13007.9,
+      "price": 19.41,
+      "pChange": 2.21,
+      "change_1m": -11.25,
+      "change_3m": 38.25,
+      "change_1y": 6.07,
+      "drawdown_52w": -29.9,
+      "market_cap_cr": 13295.7,
       "is_small_cap": true,
-      "volume_ratio": 0.45,
+      "volume_ratio": 0.59,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": true,
@@ -27,8 +27,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 38.73469,
-      "pb_ratio": 1.9339718,
+      "pe_ratio": 39.591835,
+      "pb_ratio": 1.9767678,
       "roe": 3.6,
       "debt_to_equity": 26.634,
       "operating_margin": 0.3,
@@ -57,15 +57,15 @@
       "ticker": "VEDL",
       "name": "Vedanta Limited",
       "sector": "Basic Materials",
-      "price": 333.8,
-      "pChange": -1.07,
-      "change_1m": -5.33,
-      "change_3m": -48.17,
-      "change_1y": -22.44,
-      "drawdown_52w": -58.0,
-      "market_cap_cr": 130400.9,
+      "price": 329.15,
+      "pChange": -1.36,
+      "change_1m": -6.65,
+      "change_3m": -48.89,
+      "change_1y": -23.52,
+      "drawdown_52w": -58.6,
+      "market_cap_cr": 128585.1,
       "is_small_cap": false,
-      "volume_ratio": 0.17,
+      "volume_ratio": 0.25,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -76,8 +76,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 18.614828,
-      "pb_ratio": 3.244501,
+      "pe_ratio": 18.355629,
+      "pb_ratio": 3.1993237,
       "roe": 20.4,
       "debt_to_equity": 48.044,
       "operating_margin": 26.2,
@@ -90,15 +90,260 @@
       "announcements": [
         {
           "date": "02-Jun-2026",
+          "subject": "News Verification"
+        },
+        {
+          "date": "02-Jun-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "02-Jun-2026",
+          "subject": "News Verification"
+        }
+      ]
+    },
+    {
+      "ticker": "HCLTECH",
+      "name": "HCL Technologies Limited",
+      "sector": "Technology",
+      "price": 1182.8,
+      "pChange": -4.92,
+      "change_1m": -0.08,
+      "change_3m": -10.15,
+      "change_1y": -28.64,
+      "drawdown_52w": -33.6,
+      "market_cap_cr": 320105.7,
+      "is_small_cap": false,
+      "volume_ratio": 0.28,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 19.300163,
+      "pb_ratio": 4.171134,
+      "roe": 23.4,
+      "debt_to_equity": 6.935,
+      "operating_margin": 16.5,
+      "net_margin": 12.8,
+      "revenue_growth": 5.3,
+      "ocf_cr": 19975.0,
+      "52w_high": 1780.1,
+      "52w_low": 1103.4,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "02-Jun-2026",
           "subject": "Disclosure under SEBI Takeover Regulations"
         },
         {
-          "date": "29-May-2026",
-          "subject": "Appointment"
+          "date": "27-May-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "25-May-2026",
+          "subject": "Updates"
+        }
+      ]
+    },
+    {
+      "ticker": "COFORGE",
+      "name": "Coforge Limited",
+      "sector": "Technology",
+      "price": 1430.5,
+      "pChange": -5.82,
+      "change_1m": 0.61,
+      "change_3m": 28.33,
+      "change_1y": -25.16,
+      "drawdown_52w": -28.3,
+      "market_cap_cr": 61520.1,
+      "is_small_cap": false,
+      "volume_ratio": 0.37,
+      "panic_selling": false,
+      "triggered_1d": true,
+      "triggered_1m": false,
+      "triggered_3m": false,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 32.69424,
+      "pb_ratio": 5.038332,
+      "roe": 18.6,
+      "debt_to_equity": 7.518,
+      "operating_margin": 16.6,
+      "net_margin": 9.5,
+      "revenue_growth": 30.5,
+      "ocf_cr": 1791.7,
+      "52w_high": 1994.0,
+      "52w_low": 1008.1,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "02-Jun-2026",
+          "subject": "Press Release"
+        },
+        {
+          "date": "30-May-2026",
+          "subject": "Copy of Newspaper Publication"
         },
         {
           "date": "29-May-2026",
-          "subject": "Cessation"
+          "subject": "Shareholders meeting"
+        }
+      ]
+    },
+    {
+      "ticker": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "sector": "Technology",
+      "price": 2243.4,
+      "pChange": -8.32,
+      "change_1m": 0.66,
+      "change_3m": -3.61,
+      "change_1y": -32.05,
+      "drawdown_52w": -36.6,
+      "market_cap_cr": 811862.6,
+      "is_small_cap": false,
+      "volume_ratio": 0.58,
+      "panic_selling": false,
+      "triggered_1d": true,
+      "triggered_1m": false,
+      "triggered_3m": false,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 16.4932,
+      "pb_ratio": 7.1523967,
+      "roe": 48.4,
+      "debt_to_equity": 10.389,
+      "operating_margin": 25.3,
+      "net_margin": 18.4,
+      "revenue_growth": 9.6,
+      "ocf_cr": 52094.0,
+      "52w_high": 3538.0,
+      "52w_low": 2206.4,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "03-Jun-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "29-May-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "29-May-2026",
+          "subject": "Rumour Verification - Regulation 30(11)"
+        }
+      ]
+    },
+    {
+      "ticker": "LTM",
+      "name": "LTM Limited",
+      "sector": "Technology",
+      "price": 4047.1,
+      "pChange": -6.85,
+      "change_1m": 0.98,
+      "change_3m": 2.18,
+      "change_1y": -22.56,
+      "drawdown_52w": -37.1,
+      "market_cap_cr": 119942.3,
+      "is_small_cap": false,
+      "volume_ratio": 0.27,
+      "panic_selling": false,
+      "triggered_1d": true,
+      "triggered_1m": false,
+      "triggered_3m": false,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 23.89299,
+      "pb_ratio": 4.9917583,
+      "roe": 21.3,
+      "debt_to_equity": 9.582,
+      "operating_margin": 7.6,
+      "net_margin": 11.9,
+      "revenue_growth": 6.1,
+      "ocf_cr": 4798.8,
+      "52w_high": 6429.5,
+      "52w_low": 3901.0,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "02-Jun-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "02-Jun-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "01-Jun-2026",
+          "subject": "Shareholders meeting"
+        }
+      ]
+    },
+    {
+      "ticker": "LTM",
+      "name": "LTM Limited",
+      "sector": "Technology",
+      "price": 4047.1,
+      "pChange": -6.85,
+      "change_1m": 0.98,
+      "change_3m": 2.18,
+      "change_1y": -22.56,
+      "drawdown_52w": -37.1,
+      "market_cap_cr": 119942.3,
+      "is_small_cap": false,
+      "volume_ratio": 0.27,
+      "panic_selling": false,
+      "triggered_1d": true,
+      "triggered_1m": false,
+      "triggered_3m": false,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 23.89299,
+      "pb_ratio": 4.9917583,
+      "roe": 21.3,
+      "debt_to_equity": 9.582,
+      "operating_margin": 7.6,
+      "net_margin": 11.9,
+      "revenue_growth": 6.1,
+      "ocf_cr": 4798.8,
+      "52w_high": 6429.5,
+      "52w_low": 3901.0,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "02-Jun-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "02-Jun-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "01-Jun-2026",
+          "subject": "Shareholders meeting"
         }
       ]
     }
