@@ -1,69 +1,20 @@
 {
-  "date": "2026-06-26",
-  "generated_at": "26 Jun 2026, 07:10 AM IST",
+  "date": "2026-06-29",
+  "generated_at": "29 Jun 2026, 08:34 AM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
     {
-      "ticker": "NATIONALUM",
-      "name": "National Aluminium Company Limited",
-      "sector": "Basic Materials",
-      "price": 333.0,
-      "pChange": -4.46,
-      "change_1m": -21.15,
-      "change_3m": -13.32,
-      "change_1y": 80.61,
-      "drawdown_52w": -25.2,
-      "market_cap_cr": 61159.8,
-      "is_small_cap": false,
-      "volume_ratio": 0.77,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": true,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": true,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": true,
-      "pe_ratio": 9.955156,
-      "pb_ratio": 2.8304532,
-      "roe": 29.4,
-      "debt_to_equity": 0.277,
-      "operating_margin": 42.8,
-      "net_margin": 32.5,
-      "revenue_growth": -4.8,
-      "ocf_cr": 5806.1,
-      "52w_high": 445.15,
-      "52w_low": 179.93,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "22-Jun-2026",
-          "subject": "Trading Window"
-        },
-        {
-          "date": "10-Jun-2026",
-          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
-        },
-        {
-          "date": "03-Jun-2026",
-          "subject": "Disclosure under SEBI Takeover Regulations"
-        }
-      ]
-    },
-    {
       "ticker": "JPPOWER",
       "name": "Jaiprakash Power Ventures Limited",
       "sector": "Utilities",
-      "price": 17.88,
-      "pChange": -0.56,
-      "change_1m": -18.24,
-      "change_3m": 27.35,
-      "change_1y": -2.3,
-      "drawdown_52w": -35.5,
-      "market_cap_cr": 12254.0,
+      "price": 17.75,
+      "pChange": -1.0,
+      "change_1m": -18.84,
+      "change_3m": 26.42,
+      "change_1y": -3.01,
+      "drawdown_52w": -35.9,
+      "market_cap_cr": 12158.0,
       "is_small_cap": true,
       "volume_ratio": 1.34,
       "panic_selling": false,
@@ -76,8 +27,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 36.48979,
-      "pb_ratio": 1.750367,
+      "pe_ratio": 36.20408,
+      "pb_ratio": 1.7366617,
       "roe": 3.6,
       "debt_to_equity": 26.634,
       "operating_margin": 0.3,
@@ -103,18 +54,67 @@
       ]
     },
     {
+      "ticker": "PERSISTENT",
+      "name": "Persistent Systems Limited",
+      "sector": "Technology",
+      "price": 4320.5,
+      "pChange": -10.74,
+      "change_1m": -16.82,
+      "change_3m": -11.41,
+      "change_1y": -28.04,
+      "drawdown_52w": -34.5,
+      "market_cap_cr": 67523.1,
+      "is_small_cap": false,
+      "volume_ratio": 1.25,
+      "panic_selling": false,
+      "triggered_1d": true,
+      "triggered_1m": true,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 36.288834,
+      "pb_ratio": 8.626902,
+      "roe": 26.3,
+      "debt_to_equity": 6.092,
+      "operating_margin": 16.3,
+      "net_margin": 12.6,
+      "revenue_growth": 25.1,
+      "ocf_cr": 1767.1,
+      "52w_high": 6599.0,
+      "52w_low": 4312.0,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "29-Jun-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "28-Jun-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "27-Jun-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        }
+      ]
+    },
+    {
       "ticker": "WIPRO",
       "name": "Wipro Limited",
       "sector": "Technology",
-      "price": 175.09,
-      "pChange": 0.35,
-      "change_1m": -14.28,
-      "change_3m": -6.69,
-      "change_1y": -31.14,
+      "price": 175.15,
+      "pChange": 0.05,
+      "change_1m": -14.25,
+      "change_3m": -6.66,
+      "change_1y": -31.12,
       "drawdown_52w": -35.9,
-      "market_cap_cr": 183698.2,
+      "market_cap_cr": 183750.6,
       "is_small_cap": false,
-      "volume_ratio": 2.02,
+      "volume_ratio": 1.99,
       "panic_selling": true,
       "triggered_1d": false,
       "triggered_1m": true,
@@ -125,8 +125,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 13.929196,
-      "pb_ratio": 2.0718257,
+      "pe_ratio": 13.933174,
+      "pb_ratio": 2.0724175,
       "roe": 15.4,
       "debt_to_equity": 22.853,
       "operating_margin": 17.2,
@@ -138,65 +138,65 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
+          "date": "26-Jun-2026",
+          "subject": "Post Buyback Public Announcement"
+        },
+        {
+          "date": "26-Jun-2026",
+          "subject": "Press Release"
+        },
+        {
           "date": "24-Jun-2026",
           "subject": "Updates"
-        },
-        {
-          "date": "23-Jun-2026",
-          "subject": "Acquisition"
-        },
-        {
-          "date": "23-Jun-2026",
-          "subject": "Copy of Newspaper Publication"
         }
       ]
     },
     {
-      "ticker": "NATCOPHARM",
-      "name": "NATCO Pharma Limited",
-      "sector": "Healthcare",
-      "price": 904.9,
-      "pChange": 1.26,
-      "change_1m": -10.93,
-      "change_3m": -7.11,
-      "change_1y": -1.78,
-      "drawdown_52w": -26.2,
-      "market_cap_cr": 16207.7,
-      "is_small_cap": true,
-      "volume_ratio": 0.99,
+      "ticker": "WAAREEENER",
+      "name": "WAAREEENER",
+      "sector": "Technology",
+      "price": 2838.7,
+      "pChange": -5.67,
+      "change_1m": -9.62,
+      "change_3m": -8.72,
+      "change_1y": -9.53,
+      "drawdown_52w": -26.6,
+      "market_cap_cr": 81744.8,
+      "is_small_cap": false,
+      "volume_ratio": 0.4,
       "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": true,
+      "triggered_1d": true,
+      "triggered_1m": false,
       "triggered_3m": false,
       "s6_debt_equity": true,
-      "s7_current_ratio": true,
+      "s7_current_ratio": null,
       "s8_debt_cover": null,
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 11.431278,
-      "pb_ratio": 1.8739645,
-      "roe": 16.9,
-      "debt_to_equity": 7.742,
-      "operating_margin": 10.4,
-      "net_margin": 34.8,
-      "revenue_growth": -39.6,
-      "ocf_cr": 1768.3,
-      "52w_high": 1226.8,
-      "52w_low": 789.0,
+      "pe_ratio": 22.063665,
+      "pb_ratio": 5.6587243,
+      "roe": 31.6,
+      "debt_to_equity": 21.402,
+      "operating_margin": 15.0,
+      "net_margin": 14.0,
+      "revenue_growth": 111.8,
+      "ocf_cr": 1627.0,
+      "52w_high": 3865.0,
+      "52w_low": 2403.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "04-Jun-2026",
-          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+          "date": "28-Jun-2026",
+          "subject": "Updates"
         },
         {
-          "date": "03-Jun-2026",
-          "subject": "Press Release"
+          "date": "26-Jun-2026",
+          "subject": "Trading Window"
         },
         {
-          "date": "30-May-2026",
-          "subject": "Copy of Newspaper Publication"
+          "date": "24-Jun-2026",
+          "subject": "General Updates"
         }
       ]
     },
@@ -204,15 +204,15 @@
       "ticker": "INFY",
       "name": "Infosys Limited",
       "sector": "Technology",
-      "price": 1042.9,
-      "pChange": -1.3,
-      "change_1m": -8.22,
-      "change_3m": -14.8,
-      "change_1y": -32.46,
-      "drawdown_52w": -39.6,
-      "market_cap_cr": 422262.7,
+      "price": 1033.0,
+      "pChange": -0.77,
+      "change_1m": -9.09,
+      "change_3m": -15.61,
+      "change_1y": -33.11,
+      "drawdown_52w": -40.2,
+      "market_cap_cr": 418375.7,
       "is_small_cap": false,
-      "volume_ratio": 1.81,
+      "volume_ratio": 1.77,
       "panic_selling": true,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -223,8 +223,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 13.702536,
-      "pb_ratio": 4.5546002,
+      "pe_ratio": 13.576403,
+      "pb_ratio": 4.512675,
       "roe": 31.4,
       "debt_to_equity": 9.827,
       "operating_margin": 20.9,
@@ -236,16 +236,16 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
-          "date": "25-Jun-2026",
-          "subject": "Updates"
+          "date": "27-Jun-2026",
+          "subject": "Copy of Newspaper Publication"
         },
         {
           "date": "25-Jun-2026",
           "subject": "Updates"
         },
         {
-          "date": "24-Jun-2026",
-          "subject": "Shareholders meeting"
+          "date": "25-Jun-2026",
+          "subject": "Updates"
         }
       ]
     },
@@ -253,15 +253,15 @@
       "ticker": "HCLTECH",
       "name": "HCL Technologies Limited",
       "sector": "Technology",
-      "price": 1100.5,
-      "pChange": -1.2,
-      "change_1m": -7.04,
-      "change_3m": -16.4,
-      "change_1y": -33.61,
-      "drawdown_52w": -38.2,
-      "market_cap_cr": 297769.6,
+      "price": 1094.2,
+      "pChange": -0.59,
+      "change_1m": -7.57,
+      "change_3m": -16.88,
+      "change_1y": -33.99,
+      "drawdown_52w": -38.5,
+      "market_cap_cr": 295983.8,
       "is_small_cap": false,
-      "volume_ratio": 1.28,
+      "volume_ratio": 1.23,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -272,8 +272,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 17.949762,
-      "pb_ratio": 3.9490297,
+      "pe_ratio": 17.842113,
+      "pb_ratio": 3.9253464,
       "roe": 23.4,
       "debt_to_equity": 6.935,
       "operating_margin": 16.5,
@@ -281,20 +281,118 @@
       "revenue_growth": 5.3,
       "ocf_cr": 19975.0,
       "52w_high": 1780.1,
-      "52w_low": 1089.5,
+      "52w_low": 1086.0,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "29-Jun-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "25-Jun-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "25-Jun-2026",
+          "subject": "Updates"
+        }
+      ]
+    },
+    {
+      "ticker": "TCS",
+      "name": "Tata Consultancy Services Limited",
+      "sector": "Technology",
+      "price": 2085.5,
+      "pChange": -0.46,
+      "change_1m": -6.42,
+      "change_3m": -10.39,
+      "change_1y": -36.83,
+      "drawdown_52w": -40.2,
+      "market_cap_cr": 754733.0,
+      "is_small_cap": false,
+      "volume_ratio": 1.98,
+      "panic_selling": true,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 15.343877,
+      "pb_ratio": 7.037787,
+      "roe": 48.4,
+      "debt_to_equity": 10.389,
+      "operating_margin": 25.3,
+      "net_margin": 18.4,
+      "revenue_growth": 9.6,
+      "ocf_cr": 52094.0,
+      "52w_high": 3489.9,
+      "52w_low": 2055.0,
       "promoter_pledge_pct": null,
       "announcements": [
         {
           "date": "25-Jun-2026",
-          "subject": "Updates"
+          "subject": "Copy of Newspaper Publication"
         },
         {
           "date": "25-Jun-2026",
-          "subject": "Updates"
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "22-Jun-2026",
+          "subject": "Record Date"
+        }
+      ]
+    },
+    {
+      "ticker": "BSOFT",
+      "name": "Birlasoft Limited",
+      "sector": "Technology",
+      "price": 299.05,
+      "pChange": -0.58,
+      "change_1m": -6.36,
+      "change_3m": -10.07,
+      "change_1y": -29.93,
+      "drawdown_52w": -36.9,
+      "market_cap_cr": 8365.0,
+      "is_small_cap": true,
+      "volume_ratio": 0.75,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 16.18172,
+      "pb_ratio": 2.0411365,
+      "roe": 13.7,
+      "debt_to_equity": 3.422,
+      "operating_margin": 17.0,
+      "net_margin": 9.8,
+      "revenue_growth": 2.4,
+      "ocf_cr": 480.9,
+      "52w_high": 474.0,
+      "52w_low": 296.8,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "25-Jun-2026",
+          "subject": "Trading Window"
         },
         {
           "date": "24-Jun-2026",
-          "subject": "Updates"
+          "subject": "Copy of Newspaper Publication"
+        },
+        {
+          "date": "22-Jun-2026",
+          "subject": "Record Date"
         }
       ]
     }
