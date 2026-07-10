@@ -1,167 +1,20 @@
 {
-  "date": "2026-07-09",
-  "generated_at": "09 Jul 2026, 07:08 AM IST",
+  "date": "2026-07-10",
+  "generated_at": "10 Jul 2026, 07:03 AM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
     {
-      "ticker": "GRAPHITE",
-      "name": "Graphite India Limited",
-      "sector": "Industrials",
-      "price": 580.65,
-      "pChange": 0.22,
-      "change_1m": -5.34,
-      "change_3m": -17.88,
-      "change_1y": 1.38,
-      "drawdown_52w": -27.6,
-      "market_cap_cr": 11336.7,
-      "is_small_cap": true,
-      "volume_ratio": 0.12,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": true,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": true,
-      "pe_ratio": 64.54394,
-      "pb_ratio": 1.9396818,
-      "roe": 2.9,
-      "debt_to_equity": 6.267,
-      "operating_margin": 6.1,
-      "net_margin": 6.1,
-      "revenue_growth": 22.5,
-      "ocf_cr": 82.0,
-      "52w_high": 802.4,
-      "52w_low": 505.8,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "08-Jul-2026",
-          "subject": "Updates"
-        },
-        {
-          "date": "08-Jul-2026",
-          "subject": "Updates"
-        },
-        {
-          "date": "08-Jul-2026",
-          "subject": "Shareholders meeting"
-        }
-      ]
-    },
-    {
-      "ticker": "BSOFT",
-      "name": "Birlasoft Limited",
-      "sector": "Technology",
-      "price": 274.25,
-      "pChange": 0.83,
-      "change_1m": -4.21,
-      "change_3m": -25.77,
-      "change_1y": -29.5,
-      "drawdown_52w": -42.1,
-      "market_cap_cr": 7667.5,
-      "is_small_cap": true,
-      "volume_ratio": 0.52,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": true,
-      "pe_ratio": 15.338367,
-      "pb_ratio": 1.8636812,
-      "roe": 13.7,
-      "debt_to_equity": 3.422,
-      "operating_margin": 17.0,
-      "net_margin": 9.8,
-      "revenue_growth": 2.4,
-      "ocf_cr": 480.9,
-      "52w_high": 474.0,
-      "52w_low": 270.2,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "04-Jul-2026",
-          "subject": "Copy of Newspaper Publication"
-        },
-        {
-          "date": "03-Jul-2026",
-          "subject": "Updates"
-        },
-        {
-          "date": "03-Jul-2026",
-          "subject": "Shareholders meeting"
-        }
-      ]
-    },
-    {
       "ticker": "TCS",
       "name": "Tata Consultancy Services Limited",
       "sector": "Technology",
-      "price": 2047.0,
-      "pChange": -0.5,
-      "change_1m": 0.76,
-      "change_3m": -16.13,
-      "change_1y": -30.18,
-      "drawdown_52w": -40.0,
-      "market_cap_cr": 740622.5,
-      "is_small_cap": false,
-      "volume_ratio": 0.5,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": true,
-      "pe_ratio": 15.329888,
-      "pb_ratio": 6.906208,
-      "roe": 48.4,
-      "debt_to_equity": 10.389,
-      "operating_margin": 25.3,
-      "net_margin": 18.4,
-      "revenue_growth": 9.6,
-      "ocf_cr": 52094.0,
-      "52w_high": 3414.0,
-      "52w_low": 1976.8,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "06-Jul-2026",
-          "subject": "Copy of Newspaper Publication"
-        },
-        {
-          "date": "25-Jun-2026",
-          "subject": "Copy of Newspaper Publication"
-        },
-        {
-          "date": "25-Jun-2026",
-          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
-        }
-      ]
-    },
-    {
-      "ticker": "WIPRO",
-      "name": "Wipro Limited",
-      "sector": "Technology",
-      "price": 173.76,
-      "pChange": 0.61,
-      "change_1m": 1.98,
-      "change_3m": -13.4,
-      "change_1y": -28.21,
-      "drawdown_52w": -36.4,
-      "market_cap_cr": 171942.4,
+      "price": 2049.5,
+      "pChange": 1.33,
+      "change_1m": 0.89,
+      "change_3m": -16.03,
+      "change_1y": -30.09,
+      "drawdown_52w": -39.7,
+      "market_cap_cr": 751115.0,
       "is_small_cap": false,
       "volume_ratio": 0.53,
       "panic_selling": false,
@@ -174,8 +27,57 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 13.861244,
-      "pb_ratio": 2.056798,
+      "pe_ratio": 15.324426,
+      "pb_ratio": 7.004049,
+      "roe": 48.4,
+      "debt_to_equity": 10.389,
+      "operating_margin": 25.3,
+      "net_margin": 18.4,
+      "revenue_growth": 9.6,
+      "ocf_cr": 52094.0,
+      "52w_high": 3399.0,
+      "52w_low": 1976.8,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "09-Jul-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "09-Jul-2026",
+          "subject": "General Updates"
+        },
+        {
+          "date": "09-Jul-2026",
+          "subject": "Press Release"
+        }
+      ]
+    },
+    {
+      "ticker": "WIPRO",
+      "name": "Wipro Limited",
+      "sector": "Technology",
+      "price": 172.76,
+      "pChange": 1.68,
+      "change_1m": 1.39,
+      "change_3m": -13.9,
+      "change_1y": -28.63,
+      "drawdown_52w": -36.7,
+      "market_cap_cr": 173901.0,
+      "is_small_cap": false,
+      "volume_ratio": 0.55,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 13.996815,
+      "pb_ratio": 2.0802271,
       "roe": 15.4,
       "debt_to_equity": 22.853,
       "operating_margin": 17.2,
@@ -197,6 +99,55 @@
         {
           "date": "07-Jul-2026",
           "subject": "Trading Window"
+        }
+      ]
+    },
+    {
+      "ticker": "BSOFT",
+      "name": "Birlasoft Limited",
+      "sector": "Technology",
+      "price": 291.45,
+      "pChange": 7.44,
+      "change_1m": 1.8,
+      "change_3m": -21.11,
+      "change_1y": -25.08,
+      "drawdown_52w": -38.5,
+      "market_cap_cr": 8158.1,
+      "is_small_cap": true,
+      "volume_ratio": 0.59,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 15.764451,
+      "pb_ratio": 1.982943,
+      "roe": 13.7,
+      "debt_to_equity": 3.422,
+      "operating_margin": 17.0,
+      "net_margin": 9.8,
+      "revenue_growth": 2.4,
+      "ocf_cr": 480.9,
+      "52w_high": 474.0,
+      "52w_low": 271.0,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "04-Jul-2026",
+          "subject": "Copy of Newspaper Publication"
+        },
+        {
+          "date": "03-Jul-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "03-Jul-2026",
+          "subject": "Shareholders meeting"
         }
       ]
     }
