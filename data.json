@@ -1,71 +1,22 @@
 {
-  "date": "2026-07-14",
-  "generated_at": "14 Jul 2026, 05:56 AM IST",
+  "date": "2026-07-15",
+  "generated_at": "15 Jul 2026, 05:58 AM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
     {
-      "ticker": "SUNTV",
-      "name": "Sun TV Network Limited",
-      "sector": "Communication Services",
-      "price": 489.7,
-      "pChange": -1.97,
-      "change_1m": -5.01,
-      "change_3m": -19.14,
-      "change_1y": -11.09,
-      "drawdown_52w": -25.9,
-      "market_cap_cr": 19684.5,
-      "is_small_cap": true,
-      "volume_ratio": 0.15,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": true,
-      "pe_ratio": 13.655002,
-      "pb_ratio": 1.5536257,
-      "roe": 11.8,
-      "debt_to_equity": 0.837,
-      "operating_margin": 33.2,
-      "net_margin": 33.2,
-      "revenue_growth": -9.6,
-      "ocf_cr": 1801.6,
-      "52w_high": 660.7,
-      "52w_low": 480.2,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "10-Jul-2026",
-          "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
-        },
-        {
-          "date": "29-Jun-2026",
-          "subject": "Trading Window"
-        },
-        {
-          "date": "19-Jun-2026",
-          "subject": "Copy of Newspaper Publication"
-        }
-      ]
-    },
-    {
       "ticker": "BSOFT",
       "name": "Birlasoft Limited",
       "sector": "Technology",
-      "price": 294.0,
-      "pChange": -1.8,
-      "change_1m": 4.21,
-      "change_3m": -19.25,
-      "change_1y": -23.31,
-      "drawdown_52w": -38.0,
-      "market_cap_cr": 8367.8,
+      "price": 286.0,
+      "pChange": -1.12,
+      "change_1m": 1.37,
+      "change_3m": -21.44,
+      "change_1y": -25.4,
+      "drawdown_52w": -39.7,
+      "market_cap_cr": 7996.0,
       "is_small_cap": true,
-      "volume_ratio": 0.7,
+      "volume_ratio": 0.69,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -76,8 +27,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 16.169638,
-      "pb_ratio": 2.0339098,
+      "pe_ratio": 16.013437,
+      "pb_ratio": 1.9435289,
       "roe": 13.7,
       "debt_to_equity": 3.422,
       "operating_margin": 17.0,
@@ -106,15 +57,15 @@
       "ticker": "WIPRO",
       "name": "Wipro Limited",
       "sector": "Technology",
-      "price": 177.96,
-      "pChange": -0.26,
-      "change_1m": 4.44,
-      "change_3m": -11.31,
-      "change_1y": -26.48,
-      "drawdown_52w": -34.8,
-      "market_cap_cr": 176502.6,
+      "price": 175.9,
+      "pChange": -0.72,
+      "change_1m": 3.23,
+      "change_3m": -12.33,
+      "change_1y": -27.33,
+      "drawdown_52w": -35.6,
+      "market_cap_cr": 174207.6,
       "is_small_cap": false,
-      "volume_ratio": 0.63,
+      "volume_ratio": 0.62,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -125,8 +76,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 13.9616585,
-      "pb_ratio": 2.1113477,
+      "pe_ratio": 14.122694,
+      "pb_ratio": 2.0838954,
       "roe": 15.4,
       "debt_to_equity": 22.853,
       "operating_margin": 17.2,
@@ -138,16 +89,16 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
+          "date": "14-Jul-2026",
+          "subject": "Copy of Newspaper Publication"
+        },
+        {
           "date": "10-Jul-2026",
           "subject": "Copy of Newspaper Publication"
         },
         {
           "date": "07-Jul-2026",
           "subject": "Updates"
-        },
-        {
-          "date": "07-Jul-2026",
-          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
         }
       ]
     }
