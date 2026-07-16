@@ -1,6 +1,6 @@
 {
-  "date": "2026-07-15",
-  "generated_at": "15 Jul 2026, 05:58 AM IST",
+  "date": "2026-07-16",
+  "generated_at": "16 Jul 2026, 06:04 AM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
@@ -8,15 +8,15 @@
       "ticker": "BSOFT",
       "name": "Birlasoft Limited",
       "sector": "Technology",
-      "price": 286.0,
-      "pChange": -1.12,
-      "change_1m": 1.37,
-      "change_3m": -21.44,
-      "change_1y": -25.4,
-      "drawdown_52w": -39.7,
-      "market_cap_cr": 7996.0,
+      "price": 288.9,
+      "pChange": 1.24,
+      "change_1m": 2.4,
+      "change_3m": -20.65,
+      "change_1y": -24.64,
+      "drawdown_52w": -39.1,
+      "market_cap_cr": 8070.1,
       "is_small_cap": true,
-      "volume_ratio": 0.69,
+      "volume_ratio": 0.88,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -27,8 +27,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 16.013437,
-      "pb_ratio": 1.9435289,
+      "pe_ratio": 15.799124,
+      "pb_ratio": 1.9615371,
       "roe": 13.7,
       "debt_to_equity": 3.422,
       "operating_margin": 17.0,
@@ -57,15 +57,15 @@
       "ticker": "WIPRO",
       "name": "Wipro Limited",
       "sector": "Technology",
-      "price": 175.9,
-      "pChange": -0.72,
-      "change_1m": 3.23,
-      "change_3m": -12.33,
-      "change_1y": -27.33,
-      "drawdown_52w": -35.6,
-      "market_cap_cr": 174207.6,
+      "price": 177.87,
+      "pChange": 1.74,
+      "change_1m": 4.39,
+      "change_3m": -11.35,
+      "change_1y": -26.52,
+      "drawdown_52w": -34.9,
+      "market_cap_cr": 175928.8,
       "is_small_cap": false,
-      "volume_ratio": 0.62,
+      "volume_ratio": 0.78,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -76,8 +76,8 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 14.122694,
-      "pb_ratio": 2.0838954,
+      "pe_ratio": 14.365913,
+      "pb_ratio": 2.1044848,
       "roe": 15.4,
       "debt_to_equity": 22.853,
       "operating_margin": 17.2,
@@ -89,16 +89,16 @@
       "promoter_pledge_pct": null,
       "announcements": [
         {
+          "date": "15-Jul-2026",
+          "subject": "Shareholders meeting"
+        },
+        {
+          "date": "15-Jul-2026",
+          "subject": "Updates"
+        },
+        {
           "date": "14-Jul-2026",
           "subject": "Copy of Newspaper Publication"
-        },
-        {
-          "date": "10-Jul-2026",
-          "subject": "Copy of Newspaper Publication"
-        },
-        {
-          "date": "07-Jul-2026",
-          "subject": "Updates"
         }
       ]
     }
