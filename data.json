@@ -1,22 +1,120 @@
 {
-  "date": "2026-07-16",
-  "generated_at": "16 Jul 2026, 06:04 AM IST",
+  "date": "2026-07-17",
+  "generated_at": "17 Jul 2026, 06:03 AM IST",
   "index": "Nifty 500",
   "version": "daily",
   "stocks": [
     {
-      "ticker": "BSOFT",
-      "name": "Birlasoft Limited",
-      "sector": "Technology",
-      "price": 288.9,
-      "pChange": 1.24,
-      "change_1m": 2.4,
-      "change_3m": -20.65,
-      "change_1y": -24.64,
-      "drawdown_52w": -39.1,
-      "market_cap_cr": 8070.1,
+      "ticker": "GODIGIT",
+      "name": "GODIGIT",
+      "sector": "Financial Services",
+      "price": 281.85,
+      "pChange": -1.0,
+      "change_1m": -12.67,
+      "change_3m": -8.8,
+      "change_1y": -23.83,
+      "drawdown_52w": -26.1,
+      "market_cap_cr": 26043.1,
       "is_small_cap": true,
-      "volume_ratio": 0.88,
+      "volume_ratio": 0.13,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": true,
+      "triggered_3m": false,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": false,
+      "net_margin_available": true,
+      "op_cf_available": false,
+      "pe_ratio": 47.908165,
+      "pb_ratio": 5.544839,
+      "roe": 11.7,
+      "debt_to_equity": 7.469,
+      "operating_margin": 5.4,
+      "net_margin": 5.2,
+      "revenue_growth": 22.6,
+      "ocf_cr": 2025.7,
+      "52w_high": 381.4,
+      "52w_low": 281.5,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "15-Jul-2026",
+          "subject": "Copy of Newspaper Publication"
+        },
+        {
+          "date": "14-Jul-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "14-Jul-2026",
+          "subject": "Shareholders meeting"
+        }
+      ]
+    },
+    {
+      "ticker": "GESHIP",
+      "name": "The Great Eastern Shipping Company Limited",
+      "sector": "Industrials",
+      "price": 1347.4,
+      "pChange": -2.19,
+      "change_1m": -9.15,
+      "change_3m": -13.96,
+      "change_1y": 47.46,
+      "drawdown_52w": -25.1,
+      "market_cap_cr": 19231.1,
+      "is_small_cap": true,
+      "volume_ratio": 0.34,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": true,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 6.550282,
+      "pb_ratio": 1.133721,
+      "roe": 18.8,
+      "debt_to_equity": 6.409,
+      "operating_margin": 37.1,
+      "net_margin": 54.4,
+      "revenue_growth": 23.6,
+      "ocf_cr": 2853.9,
+      "52w_high": 1798.0,
+      "52w_low": 913.1,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "13-Jul-2026",
+          "subject": "Certificate under SEBI (Depositories and Participants) Regulations, 2018"
+        },
+        {
+          "date": "10-Jul-2026",
+          "subject": "Copy of Newspaper Publication"
+        },
+        {
+          "date": "09-Jul-2026",
+          "subject": "Press Release"
+        }
+      ]
+    },
+    {
+      "ticker": "WIPRO",
+      "name": "Wipro Limited",
+      "sector": "Technology",
+      "price": 174.7,
+      "pChange": -1.69,
+      "change_1m": 2.53,
+      "change_3m": -12.93,
+      "change_1y": -27.83,
+      "drawdown_52w": -36.0,
+      "market_cap_cr": 173054.7,
+      "is_small_cap": false,
+      "volume_ratio": 0.84,
       "panic_selling": false,
       "triggered_1d": false,
       "triggered_1m": false,
@@ -27,8 +125,57 @@
       "profitability_checked": true,
       "net_margin_available": true,
       "op_cf_available": true,
-      "pe_ratio": 15.799124,
-      "pb_ratio": 1.9615371,
+      "pe_ratio": 13.688577,
+      "pb_ratio": 2.070051,
+      "roe": 15.4,
+      "debt_to_equity": 22.853,
+      "operating_margin": 17.2,
+      "net_margin": 14.2,
+      "revenue_growth": 7.7,
+      "ocf_cr": 14931.6,
+      "52w_high": 273.1,
+      "52w_low": 169.0,
+      "promoter_pledge_pct": null,
+      "announcements": [
+        {
+          "date": "16-Jul-2026",
+          "subject": "Analysts/Institutional Investor Meet/Con. Call Updates"
+        },
+        {
+          "date": "16-Jul-2026",
+          "subject": "Updates"
+        },
+        {
+          "date": "16-Jul-2026",
+          "subject": "Shareholders meeting"
+        }
+      ]
+    },
+    {
+      "ticker": "BSOFT",
+      "name": "Birlasoft Limited",
+      "sector": "Technology",
+      "price": 289.4,
+      "pChange": -0.19,
+      "change_1m": 2.58,
+      "change_3m": -20.51,
+      "change_1y": -24.51,
+      "drawdown_52w": -38.9,
+      "market_cap_cr": 8081.2,
+      "is_small_cap": true,
+      "volume_ratio": 0.93,
+      "panic_selling": false,
+      "triggered_1d": false,
+      "triggered_1m": false,
+      "triggered_3m": true,
+      "s6_debt_equity": true,
+      "s7_current_ratio": null,
+      "s8_debt_cover": null,
+      "profitability_checked": true,
+      "net_margin_available": true,
+      "op_cf_available": true,
+      "pe_ratio": 15.391373,
+      "pb_ratio": 1.9642553,
       "roe": 13.7,
       "debt_to_equity": 3.422,
       "operating_margin": 17.0,
@@ -50,55 +197,6 @@
         {
           "date": "03-Jul-2026",
           "subject": "Updates"
-        }
-      ]
-    },
-    {
-      "ticker": "WIPRO",
-      "name": "Wipro Limited",
-      "sector": "Technology",
-      "price": 177.87,
-      "pChange": 1.74,
-      "change_1m": 4.39,
-      "change_3m": -11.35,
-      "change_1y": -26.52,
-      "drawdown_52w": -34.9,
-      "market_cap_cr": 175928.8,
-      "is_small_cap": false,
-      "volume_ratio": 0.78,
-      "panic_selling": false,
-      "triggered_1d": false,
-      "triggered_1m": false,
-      "triggered_3m": true,
-      "s6_debt_equity": true,
-      "s7_current_ratio": null,
-      "s8_debt_cover": null,
-      "profitability_checked": true,
-      "net_margin_available": true,
-      "op_cf_available": true,
-      "pe_ratio": 14.365913,
-      "pb_ratio": 2.1044848,
-      "roe": 15.4,
-      "debt_to_equity": 22.853,
-      "operating_margin": 17.2,
-      "net_margin": 14.2,
-      "revenue_growth": 7.7,
-      "ocf_cr": 14931.6,
-      "52w_high": 273.1,
-      "52w_low": 169.0,
-      "promoter_pledge_pct": null,
-      "announcements": [
-        {
-          "date": "15-Jul-2026",
-          "subject": "Shareholders meeting"
-        },
-        {
-          "date": "15-Jul-2026",
-          "subject": "Updates"
-        },
-        {
-          "date": "14-Jul-2026",
-          "subject": "Copy of Newspaper Publication"
         }
       ]
     }
